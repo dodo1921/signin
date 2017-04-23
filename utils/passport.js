@@ -1,10 +1,10 @@
-'use strict'
+'use strict';
 
 module.exports = {
 
 	authenticate: function(req, userId, verificationCode, done){
 
-		return done(null, { id:1, name: 'Mayukh', phone: 919005835708 } );
+		done(null, { id:1, name: 'Mayukh', phone: 919005835708 } );
 	},
 
 	serializeUser: function(user, done){

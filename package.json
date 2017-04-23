@@ -11,11 +11,11 @@
     "debug": "~2.6.0",
     "express": "~4.14.1",
     "express-session": "*",
-    "passport-local": "~1.0.0",
-    "passport": "~0.2.0",
     "knex": "*",
-    "speakeasy":"*",
-    "mysql2":"*"
-        
+    "mysql": "^2.13.0",
+    "mysql2": "*",
+    "passport": "~0.2.0",
+    "passport-local": "~1.0.0",
+    "speakeasy": "*"
   }
 }
