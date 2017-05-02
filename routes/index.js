@@ -5,10 +5,19 @@ var passport = require('passport');
 
 var passportUtils = require('../utils/passport');
 
+var controllers = require('../controllers');
+
+
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.json({ message : 'hello'});
 });
+
+
+router.post('/register', controller.registration.registerPhoneNumber);
+router.post('/login', controller.registration.registerPhoneNumber);
+
 
 
 router.post('/register', function(req, res, next) {
