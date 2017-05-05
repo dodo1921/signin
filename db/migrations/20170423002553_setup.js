@@ -6,11 +6,13 @@ exports.up = function(knex, Promise) {
       table.increments('id');	
       table.bigInteger('phone').unsigned().notNull();
       table.string('name').notNull();
+      table.string('status', 1000).notNull();
+      table.string('pic').notNull();
       table.bigInteger('reference').unsigned().nullable();
       table.string('deviceId1').nullable();
       table.string('deviceId2').nullable();
       table.string('token_google').nullable();
-      table.boolean('is_online').defaultTo(false);
+      table.string('token_apple').nullable();      
       table.boolean('active').defaultTo(false);
       table.boolean('is_rooted').nullable();      
       table.timestamp('created_at').defaultTo(knex.fn.now());
@@ -20,6 +22,54 @@ exports.up = function(knex, Promise) {
       table.index(['reference']);
       table.index(['deviceId1']);
       table.index(['deviceId2']);
+    }),
+
+    knex.schema.createTable('pic', function(table){
+      table.increments('id');
+      table.integer('user_id').unsigned().notNull();      
+      table.string('small').nullable();
+      table.string('large').nullable();
+      table.boolean('is_profile').defaultTo(false);
+
+      table.index(['user_id']);
+      table.foreign('user_id').references('users.id');
+    }),
+
+    knex.schema.createTable('chats', function(table){
+      table.increments('id');
+      table.integer('sender_id').unsigned().notNull(); 
+      table.integer('receiver_id').unsigned().notNull(); 
+      table.integer('chatroom').unsigned().notNull();      
+      table.string('msg', 5000).notNull();      
+      table.boolean('is_group').defaultTo(false);
+
+      table.index(['sender_id']);
+      table.index(['receiver_id']);
+      table.index([ 'chatroom', 'is_group' ]);
+      table.foreign('sender_id').references('users.id');
+      table.foreign('receiver_id').references('users.id');
+
+    }),
+
+    knex.schema.createTable('groups', function(table){
+      table.increments('id');           
+      table.string('small').nullable();
+      table.string('large').nullable();
+      table.string('name').notNull();
+      table.string('status', 1000).nullable();
+      
+    }),
+
+    knex.schema.createTable('groupmembers', function(table){
+      table.increments('id');
+      table.integer('user_id').unsigned().notNull(); 
+      table.integer('group_id').unsigned().notNull();      
+      
+      table.boolean('is_admin').defaultTo(false);
+
+      table.index(['group_id']);
+      table.foreign('user_id').references('users.id');
+      table.foreign('group_id').references('groups.id');
     }),
 
     knex.schema.createTable('scores', function(table){
