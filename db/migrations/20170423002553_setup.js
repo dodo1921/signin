@@ -248,6 +248,10 @@ exports.up = function(knex, Promise) {
 exports.down = function(knex, Promise) {  
   return Promise.all([
     knex.schema.dropTableIfExists('users'),
+    knex.schema.dropTableIfExists('pics'),
+    knex.schema.dropTableIfExists('chats'),
+    knex.schema.dropTableIfExists('groups'),
+    knex.schema.dropTableIfExists('groupmembers'),
     knex.schema.dropTableIfExists('scores'),
     knex.schema.dropTableIfExists('jeweltype'),
     knex.schema.dropTableIfExists('jewels'),
