@@ -184,7 +184,7 @@ exports.up = function(knex, Promise) {
     	   	
     }),
 
-    knex.schema.createTable('factorymaterial', function(table){
+    knex.schema.createTable(' ', function(table){
     	table.increments('id');
     	table.integer('factory_id').unsigned().notNull();
     	table.integer('jeweltype_id').unsigned().notNull();
