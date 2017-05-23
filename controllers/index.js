@@ -2,6 +2,12 @@
 
 var controllers = module.exports = {
   
-  registrar: require('./registration') 
+  registration : require('./registration'),
+  contacts :  require('./contacts'),
+  groups :  require('./groups'),
+  chats :  require('./chats'),
+  game :  require('./game'),
+  task :  require('./tasks'),
+  wallet :  require('./wallets')
     	
 };
