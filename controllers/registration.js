@@ -40,12 +40,13 @@ registration.registerPhoneNumber = function(req, res, next) {
 								  }
 								});
 
+								/*
 								setTimeout(function(){
 									//set vcode to null
 									knex('users').where({phone}).update({vcode:null})
 
 								}, 600000);
-
+								*/
 
 								if( user[0].active ){									
 
@@ -133,7 +134,13 @@ registration.verifyCode= function(req, res, next) {
         if (err) next(err);
         
         req.logIn(user, function(err) {      
-            if (err) next(err);            
+            if (err) next(err);
+            //initial jewels
+            //initial scores
+            //create factories
+            //create tasks
+            //create achivements
+
             res.json({ error : false }); 
         });
 		    
@@ -202,8 +209,7 @@ registration.resendVcode= function(req, res, next) {
 
 };
 
-registration.inviteUser= function(req, res, next) {
-  
+registration.inviteUser= function(req, res, next) { 
 	
 
 };
@@ -226,11 +232,16 @@ registration.updateGcmToken= function(req, res, next) {
 
 registration.getChildren= function(req, res, next) {
   
-  knex('users').where({phone}).select()
-	.then( user =>{
-
-	})
-	.catch(
+	  knex('users')
+	  .where({reference: req.user.phone })
+	  .join('scores', 'users.id', '=', 'scores.user_id')
+	  .select('users.id', 'users.name', 'scores.level')
+		.then( users =>{
+			res.json({ children: users });
+		})
+		.catch(err=>{
+			next(err);
+		});
 
 };
 

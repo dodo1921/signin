@@ -23,7 +23,7 @@ router.post('/inviteUser', controller.registration.inviteUser);
 router.post('/updateGcmToken', controller.registration.updateGcmToken);
 router.get('/getChildren', controller.registration.getChildren);
 
-router.post('/uploadContacts', controller.contacts.uploadContacts );
+
 router.get('/getRegisteredContacts', controller.contacts.getRegisteredContacts);
 router.get('/getProfile', controller.contacts.getProfile);
 router.get('/getUserProfile', controller.contacts.getUserProfile);
