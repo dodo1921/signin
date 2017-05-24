@@ -1,5 +1,7 @@
 'use strict';
 
+let knex = require('../db/knex');
+
 module.exports = {
 
 	authenticate: function(req, userId, verificationCode, done){

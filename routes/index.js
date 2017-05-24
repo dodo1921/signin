@@ -25,6 +25,11 @@ router.get('/getChildren', controller.registration.getChildren);
 
 router.post('/uploadContacts', controller.contacts.uploadContacts );
 router.get('/getRegisteredContacts', controller.contacts.getRegisteredContacts);
+router.get('/getProfile', controller.contacts.getProfile);
+router.get('/getUserProfile', controller.contacts.getUserProfile);
+router.post('/addPic', controller.contacts.addPic);
+router.post('/updateProfilePic', controller.contacts.updateProfilePic);
+router.post('/updateProfileStatus', controller.contacts.updateProfileStatus);
 
 router.get('/getGroups', controller.groups.getGroups);
 
@@ -36,8 +41,7 @@ router.post('/leaveGroup', controller.groups.leaveGroup);
 
 router.get('/getAllMessages', controller.chats.getAllMessages );
 
-router.post('/pickJewel', controller.game.pickJewel);
-router.get('/getGameState', controller.game.getGameState);
+
 
 
 router.get('/getTasks', controller.task.getTasks);
@@ -46,16 +50,15 @@ router.get('/redeemTask', controller.task.redeemTask);
 router.get('/getAchievements', controller.task.getAchievements);
 router.get('/redeemAchivement', controller.task.redeemAchivement);
 
+router.post('/pickJewel', controller.game.pickJewel);
+router.get('/getGameState', controller.game.getGameState);
+
 router.get('/getFactories', controller.game.getFactories);
 router.get('/startFactory', controller.game.startFactory);
 router.get('/stopFactory', controller.game.stopFactory);
 router.get('/getJewelFromFactory', controller.game.getJewelFromFactory);
 
-router.get('/getProfile', controller.contacts.getProfile);
-router.get('/getUserProfile', controller.contacts.getUserProfile);
-router.post('/addPic', controller.contacts.addPic);
-router.post('/updateProfilePic', controller.contacts.updateProfilePic);
-router.post('/updateProfileStatus', controller.contacts.updateProfileStatus);
+
 
 router.get('/getMarket', controller.game.getMarket);
 router.get('/getMyShop', controller.game.getMyShop);
