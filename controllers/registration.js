@@ -8,9 +8,6 @@ let request = require('request');
 let registration = module.exports;
 
 
-
-
-
 registration.registerPhoneNumber = function(req, res, next) {
 
 	let phone = req.body.phone;
@@ -18,7 +15,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 	knex('users').where({phone}).select()
 	.then( user =>{
 
-		if( user || user.length>0 ){	
+		if( user && user.length>0 ){	
 
 					//send sms vcode
 
@@ -26,6 +23,8 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 					knex('users').where({phone}).update({vcode:se})
 					.then(()=>{
+
+								/*
 
 								let sms = 'CitiTalk verification PIN '+se;
 								let encoded_sms = encodeURI(sms);
@@ -39,6 +38,8 @@ registration.registerPhoneNumber = function(req, res, next) {
 								    
 								  }
 								});
+
+								*/
 
 								/*
 								setTimeout(function(){
@@ -77,6 +78,8 @@ registration.registerPhoneNumber = function(req, res, next) {
 					knex('users').where({phone}).update({vcode:se})
 					.then(()=>{
 
+								/*
+
 								let sms = 'CitiTalk verification PIN '+se;
 								let encoded_sms = encodeURI(sms);
 								
@@ -89,7 +92,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 								    
 								  }
 								});
-
+								*/
 								/*
 								setTimeout(function(){
 									//set vcode to null
@@ -99,7 +102,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 								*/
 
-								res.json({ error: false, userId: id, active: false });
+								res.json({ error: false, userId: id[0], active: false });
 
 
 
@@ -155,7 +158,7 @@ registration.initialDetails= function(req, res, next) {
 		let name = req.body.name;
 		let reference = req.body.reference;
 
-		knex('users').where({id: userId}).update({ name, reference?reference:null })
+		knex('users').where({id: userId}).update({ name, reference })
 		.then(()=>{
 				res.json({ error: false });
 		})

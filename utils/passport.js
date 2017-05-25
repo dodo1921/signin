@@ -6,18 +6,43 @@ module.exports = {
 
 	authenticate: function(req, userId, verificationCode, done){
 
-		done(null, { id:1, name: 'Mayukh', phone: 919005835708 } );
+		knex('users').where({id: userId})
+		.select()
+		.then( user => {
+			if(user[0].vcode === verificationCode)
+				done(null, user[0] );
+			else{
+				let err = new Error('Verification code does not match');
+  			err.status = 403;
+				done( err, null );
+			}
+		})
+		.catch( err => {
+			done( err , null);
+		})	
+
+
+		
 	},
 
 	serializeUser: function(user, done){
 
-		done(null, 1 );
+		done(null, user.id );
 
 	},
 
 	deserializeUser: function(id, done){
 
-		done(null, { id:1, name: 'Mayukh', phone: 919005835708 } )
+		knex('users').where({id})
+		.select()
+		.then( user => {
+			done(null, user[0] )
+		})
+		.catch( err => {
+			done( err , null);
+		})
+
+		
 
 	},
 
@@ -28,9 +53,9 @@ module.exports = {
 		    //console.log('OMGOMGOMG:::ISAuthenticated');
 		    return next();
 
-		}else{       
+		}else{      
 		        
-		        res.status(403).json({ success: false, data: 'Auth Error'});
+		  res.status(403).json({ success: false, data: 'Auth Error'});
 		        
 		}
 

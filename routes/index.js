@@ -5,7 +5,7 @@ var passport = require('passport');
 
 var passportUtils = require('../utils/passport');
 
-var controllers = require('../controllers');
+var controller = require('../controllers');
 
 
 

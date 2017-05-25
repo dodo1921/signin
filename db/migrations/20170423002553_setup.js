@@ -216,9 +216,9 @@ exports.up = function(knex, Promise) {
       table.increments('id');
       table.integer('factory_id').unsigned().notNull();
       table.integer('user_id').unsigned().notNull(); 
-      table.timestamp('start_time').notNull();    
-      table.timestamp('end_time').notNull();
-      table.boolean('diamond_used').notNull(); 
+      table.timestamp('start_time').nullable();    
+      table.timestamp('end_time').nullable();
+      table.boolean('diamond_used').defaultTo(false); 
 
       table.foreign('factory_id').references('factory.id'); 
       table.foreign('user_id').references('users.id');      
