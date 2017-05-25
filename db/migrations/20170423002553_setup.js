@@ -205,7 +205,8 @@ exports.up = function(knex, Promise) {
       table.increments('id');
       table.integer('factory_id').unsigned().notNull();
       table.integer('user_id').unsigned().notNull();      
-      
+      table.timestamp('start_time').nullable();
+      table.boolean('is_on').nullable();
       table.foreign('factory_id').references('factory.id'); 
       table.foreign('user_id').references('users.id');      
     })
@@ -216,8 +217,8 @@ exports.up = function(knex, Promise) {
       table.integer('factory_id').unsigned().notNull();
       table.integer('user_id').unsigned().notNull(); 
       table.timestamp('start_time').notNull();    
-      table.timestamp('end_time').nullable();
-      table.boolean('diamond_used').nullable(); 
+      table.timestamp('end_time').notNull();
+      table.boolean('diamond_used').notNull(); 
 
       table.foreign('factory_id').references('factory.id'); 
       table.foreign('user_id').references('users.id');      
