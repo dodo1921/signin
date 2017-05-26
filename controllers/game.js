@@ -145,23 +145,68 @@ game.getFactories = function(req, res, next) {
 };
 
 game.startFactory = function(req, res, next) {
-  
-  knex('factoryuser').where({id: req.body.factoryuser_id, is_on: false }).update({ is_on: true, start_time: knex.fn.now() })
-  .then(() => {
 
-  	knex('factoryuser').where({id: req.body.factoryuser_id}).select()
-  	.then( fac => {
-  		res.json({error: false, factory: fac });
-  	})
-  	.catch(err => {
-  		next(err);
-  	})
+  let materials;
 
-  	
+  knex('factorymaterial').where({ factory_id: req.body.factory_id }).select( 'jeweltype_id' , 'count' )
+  .then( jewels => {
+      materials = jewels;
+      return Promise.map( jewels, jewel=>{
+          return knex('jewels')
+                .where({ user_id: req.user.id, jeweltype_id: jewel.jeweltype_id })
+                .first('count')          
+      });         
   })
-  .catch(err => {
-  	next(err);
+  .then( jewelcounts => {
+
+    let temps = [];
+
+    for(let i=0; i<jewelcounts.length; i++){
+
+      if(materials[i].count > jewelcounts[i].count)
+        return res.json({error:false, is_on: false, msg: 'Not enough jewels in store'});
+
+      temps.push({count: ( jewelcounts[i].count - materials[i].count ), jeweltype_id: materials[i].jeweltype_id })
+
+    }
+
+    knex.transaction(function(trx) {      
+
+          Promise.map(temps, temp => {
+                  
+                  return knex('jewels').where({ user_id: req.user.id, jeweltype_id: temp.jeweltype_id })
+                  .update({count: temp.count}).transacting(trx);
+          })
+          .then(()=>{
+            return knex('factoryuser')
+            .where({id: req.body.factoryuser_id, is_on: false })
+            .update({ is_on: true, start_time: knex.fn.now() }).transacting(trx);
+          })         
+          .then(trx.commit)
+          .catch(trx.rollback);
+
+    })
+    .then(function() {
+      return knex('factoryuser').where({id: req.body.factoryuser_id}).select();
+      
+    })
+    .then(fac => {
+      res.json({error: false, factory: fac , is_on: true });
+    })
+    .catch(function(error) {
+      // If we get here, that means that neither the 'Old Books' catalogues insert,
+      // nor any of the books inserts will have taken place.
+      next(error)
+    });
+
+
+
+  })
+  .catch( err => {
+    next(err);
   });
+  
+  
 	
 
 };
