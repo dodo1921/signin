@@ -69,15 +69,12 @@ registration.registerPhoneNumber = function(req, res, next) {
 		}else{
 
 			//insert new user
-			knex.returning('id').table('users').insert({ phone })
+			let se = speakeasy.totp({key: 'secret'});
+			knex.returning('id').table('users').insert({ phone, vcode:se })
 			.then(id => {
-				//send sms vcode
+				//send sms vcode	
 
-					let se = speakeasy.totp({key: 'secret'});
-
-					knex('users').where({phone}).update({vcode:se})
-					.then(()=>{
-
+					
 								/*
 
 								let sms = 'CitiTalk verification PIN '+se;
@@ -102,14 +99,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 								*/
 
-								res.json({ error: false, userId: id[0], active: false });
-
-
-
-					})
-					.catch( err =>{
-						next(err);
-					});	
+								res.json({ error: false, userId: id[0], active: false });				
 
 
 
@@ -153,12 +143,14 @@ registration.verifyCode= function(req, res, next) {
 };
 
 registration.initialDetails= function(req, res, next) {
+	
 
-		let userId = req.body.userId;
-		let name = req.body.name;
-		let reference = req.body.reference;
+		let upd = {};
+		upd.name = req.body.name;
+		if(req.body.reference)
+			upd.reference = req.body.reference;
 
-		knex('users').where({id: userId}).update({ name, reference })
+		knex('users').where({id: req.user.id}).update(upd)
 		.then(()=>{
 				res.json({ error: false });
 		})

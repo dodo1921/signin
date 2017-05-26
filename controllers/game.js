@@ -4,10 +4,118 @@ let game = module.exports;
 let knex = require('../db/knex');
 let Promise = require('bluebird');
 
+
+
+function innerpickjewel( req, res, next, jewel ,msg_id, jeweltype){
+
+    if(jewel[0] === jeweltype ){
+
+          knex('jewels')
+          .where({ user_id : req.user.id })
+          .andWhereNotIn('jeweltype_id', [1, 2])
+          .sum('count')
+          .then( count => {
+
+             if( count[0] < 25  ){
+
+                knex('jewels')
+                .where({ user_id : req.user.id, jeweltype_id : jeweltype })
+                .select()
+                .then( row => {
+                      if(row.length>0){
+
+                          let count = row[0].count+1;
+                          let total_count = row[0].total_count + 1;
+                          let t = knex.fn.now();
+
+                          knex('jewels')
+                          .where({ user_id : req.user.id, jeweltype_id : jeweltype })
+                          update({ count, total_count, updated_at: t })
+                          .then( () => {
+                              res.json({error: false})
+                          })
+                          .catch(err=>{
+                            next(err);
+                          });
+
+                      }else{
+
+                          knex.table('jewels')
+                          .where({ user_id : req.user.id})
+                          .insert({ jeweltype_id : jeweltype , count: 1, total_count: 1 })
+                          .then( () => {
+                              res.json({error: false})
+                          })
+                          .catch(err=>{
+                            next(err);
+                          });
+
+                      }
+                })
+                .catch(err=>{
+                  next(err);
+                });
+
+             }else{
+                res.json({error: false, msg: 'Jewel Store Full'})  
+             } 
+
+          })
+          .catch( err => {
+            next(err)
+          })
+
+    }else{
+      console.log('Jeweltype mismatch');
+      let err = new Error('Jewel type mismatch');
+      next(err);
+    }
+
+
+}
+
+
 game.pickJewel = function(req, res, next) {
 
 
-    knex.transaction(function(trx) {      
+      let jeweltype = req.body.jeweltype;
+      let is_group = req.body.is_group;
+      let msg_id = req.body.msg_id;
+
+      if(is_group){
+
+            //  find msg check jeweltype
+            //check total count less than 25
+            //  update or insert jeweltype count
+
+            knex('groupchats').where({ id : msg_id }).select('jeweltype')
+            .then(jewel => {
+                innerpickjewel(req, res, next, jewel, msg_id, jeweltype);
+            })
+            .catch(err=>{
+              next(err);
+            });          
+
+      }else{
+
+            knex('chats').where({ id : msg_id }).select('jeweltype')
+            .then(jewel => {
+                innerpickjewel(req, res, next, jewel, msg_id, jeweltype);
+            })
+            .catch(err=>{
+              next(err);
+            });
+
+      }   
+				
+
+};
+
+
+
+
+/*
+ knex.transaction(function(trx) {      
 
           Promise.all([
                   knex.insert({id: 13, name: 'j11', min_cost: 5000 }).into('jeweltype').transacting(trx),
@@ -27,9 +135,7 @@ game.pickJewel = function(req, res, next) {
       next(error)
     });
 
-				
-
-};
+*/
 
 
 game.getGameState = function(req, res, next) {
