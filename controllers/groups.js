@@ -10,16 +10,14 @@ let groups = module.exports;
 
 groups.getGroups= function(req, res, next) {
 
-	knex('groupmembers').where({ user_id: req.user.id }).join('groups', 'groups.id', '=', 'groupmembers.group_id')
-	.select('groups.id', 'groups.name', 'groups.status', 'groups.small', 'groups.large')
-	.then(groups => {
-		res.json({error: false, groups })
-	})
-	.catch(err => {
-		next(err);
-	});
-  
-	
+		knex('groupmembers').where({ user_id: req.user.id }).join('groups', 'groups.id', '=', 'groupmembers.group_id')
+		.select('groups.id', 'groups.name', 'groups.status', 'groups.small', 'groups.large')
+		.then(groups => {
+			res.json({error: false, groups })
+		})
+		.catch(err => {
+			next(err);
+		});
 
 };
 
@@ -38,13 +36,15 @@ groups.createGroups= function(req, res, next) {
 		}
 
 		let grmembers = req.body.grmembers;
+
+		let gr;
   
   	knex.transaction( trx => {      
 
   				knex.returning('id').insert(groupdetails).into('groups').transacting(trx)
   				.then( group_id => {
-
-  						return Promise.map(grmembers, function(user) {
+  						gr = group_id[0];
+  						return Promise.map(grmembers, user=>{
 							        
 							        user.group_id = group_id[0];
 
@@ -61,7 +61,7 @@ groups.createGroups= function(req, res, next) {
     })
     .then( values => {
     	//send gcm messages to other group 
-      res.json({error: false, group_id: group_id[0] });
+      res.json({error: false, group_id: gr });
     })
     .catch( err => {
       // If we get here, that means that neither the 'Old Books' catalogues insert,
@@ -73,20 +73,86 @@ groups.createGroups= function(req, res, next) {
 };
 
 groups.updateGroupStatus= function(req, res, next) {
-  
-	
+
+		knex('groups').where({id: req.body.group_id}).update({status: req.body.status })
+		.then(()=>{
+			res.json({error: false});
+		})
+		.catch(err=>{
+			next(err);
+		});	
 
 };
 
 groups.updateGroupPic= function(req, res, next) {
   
+  	knex('groups').where({id: req.body.group_id}).update({small: req.body.small, large: req.body.large })
+		.then(()=>{
+			res.json({error: false});
+		})
+		.catch(err=>{
+			next(err);
+		});
+	
+
+};
+
+groups.listGroupMemebers= function(req, res, next) {
+  
+  	knex('groupmembers').where({id: req.body.group_id}).join('users', 'users.id', '=', 'groupmembers.user_id')
+  	.select('users.id', 'users.small', 'groupmembers.is_admin', 'users.name' )
+		.then((members)=>{
+			res.json({error: false, members });
+		})
+		.catch(err=>{
+			next(err);
+		});
 	
 
 };
 
 groups.addNewMembers= function(req, res, next) {
-  
-	
+  	
+		let newmember = {};
+
+		newmember.group_id = req.body.group_id;
+		newmember.user_id = req.body.user_id;
+		newmember.is_admin = req.body.is_admin;
+
+
+		knex('groupmembers').where({ group_id: req.body.group_id}).count()
+		.then(count => {
+
+			if(count[0]>=40){
+
+				res.json({error:false, msg: 'Max group member reached'});
+
+			}else{	
+
+		 		return knex('groupmembers')
+		 		.where({user_id: req.user.id, group_id: req.body.group_id})
+		 		.select('is_admin')
+			}
+		})
+		.then( is_admin => {
+				if(is_admin[0]){
+					//send firebase msg
+					return knex.insert(newmember).into('groupmembers')				
+				}
+				else{
+					res.json({error:false, msg: 'Not an admin'});
+				}
+		})
+		.then( () => {
+							
+							res.json({error:false});
+							
+		})
+		.catch(err => {
+			next(err);
+		});
+
+		
 
 };
 

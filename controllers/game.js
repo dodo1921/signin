@@ -18,48 +18,23 @@ function innerpickjewel( req, res, next, jewel ,msg_id, jeweltype){
 
              if( count[0] < 25  ){
 
-                knex('jewels')
-                .where({ user_id : req.user.id, jeweltype_id : jeweltype })
-                .select()
-                .then( row => {
-                      if(row.length>0){
-
                           let count = row[0].count+1;
                           let total_count = row[0].total_count + 1;
                           let t = knex.fn.now();
 
-                          knex('jewels')
+                          return knex('jewels')
                           .where({ user_id : req.user.id, jeweltype_id : jeweltype })
-                          update({ count, total_count, updated_at: t })
-                          .then( () => {
-                              res.json({error: false})
-                          })
-                          .catch(err=>{
-                            next(err);
-                          });
-
-                      }else{
-
-                          knex.table('jewels')
-                          .where({ user_id : req.user.id})
-                          .insert({ jeweltype_id : jeweltype , count: 1, total_count: 1 })
-                          .then( () => {
-                              res.json({error: false})
-                          })
-                          .catch(err=>{
-                            next(err);
-                          });
-
-                      }
-                })
-                .catch(err=>{
-                  next(err);
-                });
+                          .update({ count, total_count, updated_at: t })
+                          
+                                         
 
              }else{
                 res.json({error: false, msg: 'Jewel Store Full'})  
              } 
 
+          })
+          .then( () => {
+            res.json({error: false})
           })
           .catch( err => {
             next(err)
@@ -115,7 +90,7 @@ game.pickJewel = function(req, res, next) {
 
 
 /*
- knex.transaction(function(trx) {      
+    knex.transaction(function(trx) {      
 
           Promise.all([
                   knex.insert({id: 13, name: 'j11', min_cost: 5000 }).into('jeweltype').transacting(trx),
@@ -155,7 +130,7 @@ game.getGameState = function(req, res, next) {
 
 game.getFactories = function(req, res, next) {
   
-  	knex('factoryuser').where({ user_id: req.body.user_id })
+  	knex('factoryuser').where({ user_id: req.user.id })
   	.join('factory', 'factoryuser.factory_id', '=', 'factory.id')
   	.join('factorymaterial', 'factoryuser.factory_id', '=', 'factorymaterial.factory_id' )
   	.select()
