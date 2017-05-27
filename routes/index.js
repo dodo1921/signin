@@ -31,81 +31,43 @@ router.post('/addPic', controller.contacts.addPic);
 router.post('/updateProfilePic', controller.contacts.updateProfilePic);
 router.post('/updateProfileStatus', controller.contacts.updateProfileStatus);
 
-router.get('/getGroups', controller.groups.getGroups);
+router.post('/getGroups', controller.groups.getGroups);
 
 router.post('/createGroups', controller.groups.createGroups);
 router.post('/addNewMembers', controller.groups.addNewMembers);
 router.post('/leaveGroup', controller.groups.leaveGroup);
 
+router.post('/getAllGroupChatMessages', controller.chats.getAllGroupChatMessages );
+router.post('/getAllChatMessages', controller.chats.getAllChatMessages );
 
-
-router.get('/getAllMessages', controller.chats.getAllMessages );
-
-
-
-
-router.get('/getTasks', controller.task.getTasks);
-router.get('/getTaskElements', controller.task.getTaskElements)
-router.get('/redeemTask', controller.task.redeemTask);
-router.get('/getAchievements', controller.task.getAchievements);
-router.get('/redeemAchivement', controller.task.redeemAchivement);
+router.post('/getTasks', controller.task.getTasks);
+router.post('/getTaskElements', controller.task.getTaskElements)
+router.post('/redeemTask', controller.task.redeemTask);
+router.post('/getAchievements', controller.task.getAchievements);
+router.post('/redeemAchivement', controller.task.redeemAchivement);
 
 router.post('/pickJewel', controller.game.pickJewel);
-router.get('/getGameState', controller.game.getGameState);
+router.post('/getGameState', controller.game.getGameState);
 
-router.get('/getFactories', controller.game.getFactories);
-router.get('/startFactory', controller.game.startFactory);
-router.get('/stopFactory', controller.game.stopFactory);
-router.get('/getJewelFromFactory', controller.game.getJewelFromFactory);
+router.post('/getFactories', controller.game.getFactories);
+router.post('/getFactoryMaterials', controller.game.getFactoryMaterials);
+router.post('/startFactory', controller.game.startFactory);
+router.post('/stopFactory', controller.game.stopFactory);
+router.post('/getJewelFromFactory', controller.game.getJewelFromFactory);
 
+router.post('/getMarket', controller.game.getMarket);
+router.post('/getMyShop', controller.game.getMyShop);
+router.post('/addToShop', controller.game.addToShop);
+router.post('/getUserShop', controller.game.getUserShop);
 
-
-router.get('/getMarket', controller.game.getMarket);
-router.get('/getMyShop', controller.game.getMyShop);
-router.get('/addToShop', controller.game.addToShop);
-router.get('/getUserShop', controller.game.getUserShop);
-
-router.get('/getWallet', controller.wallet.getWallet );
-router.get('/redeemMoney', controller.wallet.redeemMoney);
-router.get('/buyDiamonds', controller.wallet.buyDiamonds);
-router.get('/buyCoins', controller.wallet.buyCoins);
-
+router.post('/getWallet', controller.wallet.getWallet );
+router.post('/redeemMoney', controller.wallet.redeemMoney);
+router.post('/buyDiamonds', controller.wallet.buyDiamonds);
+router.post('/buyCoins', controller.wallet.buyCoins);
 
 
-router.post('/register', function(req, res, next) {
-  
-	var phone = req.body.phone;	
 
-	console.log(phone+':::'+name);
-
-	res.json({message : 'register'});
-
-});
-
-
-router.post('/login', function(req, res, next) {
-  
-	passport.authenticate('local', function(err, user, info) {
-        if (err) res.status(500).json({ 'success' : false, data: err});
-        
-        req.logIn(user, function(err) {      
-            if (err) res.status(500).json({ 'success' : false, data: err});
-
-            var curr_time = new Date().getTime();
-            //console.log(user);
-            return res.json({ 'success' : true, 'request': 'verifyCode', 'user': user, 'time': curr_time }); 
-        });
-		    
-    })(req, res, next);
-
-});
-
-
-router.post('/dashboard', passportUtils.isAuthenticated ,function(req, res, next) {
-  
-	res.json({message : 'dashboard'});
-
-});	
+	
 
 
 module.exports = router;

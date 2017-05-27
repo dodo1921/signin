@@ -131,9 +131,11 @@ game.getGameState = function(req, res, next) {
 game.getFactories = function(req, res, next) {
   
   	knex('factoryuser').where({ user_id: req.user.id })
+    .orderBy('factoryuser.id', 'asc').
   	.join('factory', 'factoryuser.factory_id', '=', 'factory.id')
-  	.join('factorymaterial', 'factoryuser.factory_id', '=', 'factorymaterial.factory_id' )
+  	//.join('factorymaterial', 'factoryuser.factory_id', '=', 'factorymaterial.factory_id' )
   	.select()
+    .limit(8).offset(req.body.page * 8)
   	.then(fac => {
   		res.json({error: false, factory : fac});
   	})
@@ -144,11 +146,37 @@ game.getFactories = function(req, res, next) {
 
 };
 
+task.getFactoryMaterials= function(req, res, next) {
+  
+  knex('factorymaterial').where({factory_id: req.body.factory_id})
+  .select()
+  .then(materials => {      
+      res.json({error: false, materials});  
+    })
+    .catch(err => {
+      next(err);
+    });
+
+};
+
+
+
 game.startFactory = function(req, res, next) {
 
+  // rewrite and make it simple
+  
+/*
   let materials;
+  knex('factoryuser').where({ factory_id: req.body.factory_id, user_id: req.user.id })  
+  .select( 'is_on')
+  .then( result => {    
 
-  knex('factorymaterial').where({ factory_id: req.body.factory_id }).select( 'jeweltype_id' , 'count' )
+    if(!result[0].is_on)
+      return knex('factorymaterial').where({ factory_id: req.body.factory_id })
+      .select( 'jeweltype_id' , 'count' );
+    else
+      return res.json({error: false, is_on : true, msg: 'Factory is on' });  
+  })  
   .then( jewels => {
       materials = jewels;
       return Promise.map( jewels, jewel=>{
@@ -163,17 +191,16 @@ game.startFactory = function(req, res, next) {
 
     for(let i=0; i<jewelcounts.length; i++){
 
-      if(materials[i].count > jewelcounts[i].count)
+      if(materials[i].count > jewelcounts[i][0].count)
         return res.json({error:false, is_on: false, msg: 'Not enough jewels in store'});
 
-      temps.push({count: ( jewelcounts[i].count - materials[i].count ), jeweltype_id: materials[i].jeweltype_id })
+      temps.push({count: ( jewelcounts[i][0].count - materials[i].count ), jeweltype_id: materials[i].jeweltype_id })
 
     }
 
     knex.transaction(function(trx) {      
 
-          Promise.map(temps, temp => {
-                  
+          Promise.map(temps, temp => {                  
                   return knex('jewels').where({ user_id: req.user.id, jeweltype_id: temp.jeweltype_id })
                   .update({count: temp.count}).transacting(trx);
           })
@@ -193,10 +220,8 @@ game.startFactory = function(req, res, next) {
     .then(fac => {
       res.json({error: false, factory: fac , is_on: true });
     })
-    .catch(function(error) {
-      // If we get here, that means that neither the 'Old Books' catalogues insert,
-      // nor any of the books inserts will have taken place.
-      next(error)
+    .catch( err => {      
+      next(err);
     });
 
 
@@ -207,7 +232,7 @@ game.startFactory = function(req, res, next) {
   });
   
   
-	
+	*/
 
 };
 

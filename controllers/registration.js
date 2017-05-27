@@ -12,7 +12,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 	let phone = req.body.phone;
 
-	knex('users').where({phone}).select()
+	knex('users').where({phone}).first()
 	.then( user =>{
 
 		if( user && user.length>0 ){	
