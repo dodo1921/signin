@@ -44,7 +44,7 @@ router.post('/getTasks', controller.task.getTasks);
 router.post('/getTaskElements', controller.task.getTaskElements)
 router.post('/redeemTask', controller.task.redeemTask);
 router.post('/getAchievements', controller.task.getAchievements);
-router.post('/redeemAchivement', controller.task.redeemAchivement);
+router.post('/redeemAchievement', controller.task.redeemAchivement);
 
 router.post('/pickJewel', controller.game.pickJewel);
 router.post('/getGameState', controller.game.getGameState);

@@ -21,6 +21,14 @@ exports.up = function(knex, Promise) {
 
     })
   .then(() => {
+    return knex.schema.createTable('invite', function(table){
+      table.increments('id');
+      table.integer('user_id').unsigned().notNull();      
+      table.bigInteger('invitee').unsigned().notNull();
+      table.index(['invitee']);  
+    })
+  })  
+  .then(() => {
     return knex.schema.createTable('pic', function(table){
       table.increments('id');
       table.integer('user_id').unsigned().notNull();      
@@ -130,7 +138,7 @@ exports.up = function(knex, Promise) {
       table.timestamp('duration').nullable();
       table.integer('coins').nullable();
       table.integer('points').notNull();
-      table.integer('money').nullable();
+      table.decimal('money', [5], [2] ).defaultTo(0.00).nullable();
       table.integer('level').nullable();
       table.timestamp('created_at').defaultTo(knex.fn.now());       
     })
@@ -244,6 +252,43 @@ exports.up = function(knex, Promise) {
     })
   })
   .then(() => {
+    return knex.schema.createTable('wallet', function(table){
+      table.increments('id');
+      table.integer('user_id').unsigned().notNull();
+      table.decimal('money', [15], [2]).defaultTo(0.00).notNull();
+      table.index(['user_id']);
+      
+      table.foreign('user_id').references('users.id');  
+    })
+  })
+  .then(() => {
+    return knex.schema.createTable('moneytogive', function(table){
+      table.increments('id');
+      table.integer('user_id').unsigned().notNull();
+      table.decimal('money', [15], [2]).defaultTo(0.00).notNull();
+      table.index(['user_id']);
+      
+      table.foreign('user_id').references('users.id');     
+    })
+  })
+  .then(() => {
+    return knex.schema.createTable('prize', function(table){
+      table.decimal('money', [15], [2]).defaultTo(0.00).notNull();     
+    })
+  })
+  .then(() => {
+    return knex.schema.createTable('walletlog', function(table){
+      table.increments('id');
+      table.integer('user_id').unsigned().notNull();
+      table.decimal('money', [15], [2]).defaultTo(0.00).notNull();
+      table.string('tag').notNull();
+      table.timestamp('created_at').defaultTo(knex.fn.now());
+      table.index(['user_id']);
+
+      table.foreign('user_id').references('users.id');
+    })
+  })
+  .then(() => {
     return knex.schema.createTable('diamondlog', function(table){
       table.increments('id');
       table.integer('user_id').unsigned().notNull();
@@ -283,6 +328,7 @@ exports.up = function(knex, Promise) {
 exports.down = function(knex, Promise) {  
   return Promise.all([
     knex.schema.dropTableIfExists('users'),
+    knex.schema.dropTableIfExists('invite'),    
     knex.schema.dropTableIfExists('pics'),
     knex.schema.dropTableIfExists('groups'),
     knex.schema.dropTableIfExists('groupmembers'),
@@ -299,10 +345,13 @@ exports.down = function(knex, Promise) {
     knex.schema.dropTableIfExists('factorymaterial'),
     knex.schema.dropTableIfExists('factoryuser'),
     knex.schema.dropTableIfExists('factorylogs'),
-    knex.schema.dropTableIfExists('market'), 
+    knex.schema.dropTableIfExists('market'),
+    knex.schema.dropTableIfExists('wallet'),
+    knex.schema.dropTableIfExists('moneytogive'),
+    knex.schema.dropTableIfExists('prize'),
     knex.schema.dropTableIfExists('diamondlog'), 
     knex.schema.dropTableIfExists('coinlog'), 
     knex.schema.dropTableIfExists('pointlog')
-
   ])
 };
+

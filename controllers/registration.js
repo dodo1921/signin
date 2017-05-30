@@ -142,6 +142,23 @@ registration.verifyCode= function(req, res, next) {
 
 };
 
+registration.checkValidReference= function(req, res, next) {	
+			
+
+		knex('users').where({id: req.body.reference}).select()
+		.then( user=>{
+				if(user.length>0)
+					res.json({ error: false, is_valid: true  });
+				else
+					res.json({ error: false, is_valid: false });
+		})
+		.catch( err =>{
+			next(err);
+		});	
+
+};
+
+
 registration.initialDetails= function(req, res, next) {
 	
 
