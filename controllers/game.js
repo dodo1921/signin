@@ -131,7 +131,7 @@ game.getGameState = function(req, res, next) {
 game.getFactories = function(req, res, next) {
   
   	knex('factoryuser').where({ user_id: req.user.id })
-    .orderBy('factoryuser.id', 'asc').
+    .orderBy('factoryuser.id', 'asc')
   	.join('factory', 'factoryuser.factory_id', '=', 'factory.id')
   	//.join('factorymaterial', 'factoryuser.factory_id', '=', 'factorymaterial.factory_id' )
   	.select()
@@ -146,7 +146,7 @@ game.getFactories = function(req, res, next) {
 
 };
 
-task.getFactoryMaterials= function(req, res, next) {
+game.getFactoryMaterials= function(req, res, next) {
   
   knex('factorymaterial').where({factory_id: req.body.factory_id})
   .select()

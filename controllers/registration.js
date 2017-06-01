@@ -3,6 +3,7 @@
 let knex = require('../db/knex');
 let speakeasy = require('speakeasy');
 let request = require('request');
+let passport = require('passport');
 
 
 let registration = module.exports;
@@ -51,11 +52,11 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 								if( user[0].active ){									
 
-										res.json({ error: false, userId: user[0].id, active: true });
+										return res.json({ error: false, userId: user[0].id, active: true });
 
 								}else{
 
-										res.json({ error: false, userId: user[0].id, active: false });
+										return res.json({ error: false, userId: user[0].id, active: false });
 								}
 
 
@@ -99,7 +100,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 								*/
 
-								res.json({ error: false, userId: id[0], active: false });				
+								return res.json({ error: false, userId: id[0], active: false });				
 
 
 
@@ -125,7 +126,7 @@ registration.verifyCode= function(req, res, next) {
 
 		passport.authenticate('local', (err, user, info) => {
         if (err) next(err);
-        
+        console.log(JSON.stringify(user));
         req.logIn(user, function(err) {      
             if (err) next(err);
             //initial jewels
@@ -134,7 +135,7 @@ registration.verifyCode= function(req, res, next) {
             //create tasks
             //create achivements
 
-            res.json({ error : false }); 
+            return res.json({ error : false }); 
         });
 		    
     })(req, res, next);  

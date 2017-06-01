@@ -11,7 +11,7 @@ task.getTasks = function(req, res, next) {
 	knex('taskusers').where({ user_id: req.user.id , done : false })
   	.join('tasks', 'taskusers.task_id', '=', 'tasks.id')
   	//.join('taskdetails', 'taskusers.task_id', '=', 'taskdetails.task_id' )
-  	.orderBy('taskusers.id', 'asc').
+  	.orderBy('taskusers.id', 'asc')
   	.select()
   	.limit(8).offset(req.body.page * 8)
   	.then(tasks => {
@@ -50,7 +50,7 @@ task.getAchievements= function(req, res, next) {
 	knex('achievementusers').where({ user_id: req.user.id })
   	.join('achievements', 'achievementusers.achievement_id', '=', 'achievements.id')
   	//.join('taskdetails', 'taskusers.task_id', '=', 'taskdetails.task_id' )
-  	.orderBy('achievementusers.level', 'asc').
+  	.orderBy('achievementusers.level', 'asc')
   	.select()
   	.limit(8).offset(req.body.page * 8)
   	.then(achievements => {

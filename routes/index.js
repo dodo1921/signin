@@ -11,7 +11,8 @@ var controller = require('../controllers');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.json({ message : 'hello'});
+	console.log('OMG:::'+req.session.user.sessionId);
+  	return res.json({ message : 'hello'});
 });
 
 
@@ -44,7 +45,7 @@ router.post('/getTasks', controller.task.getTasks);
 router.post('/getTaskElements', controller.task.getTaskElements)
 router.post('/redeemTask', controller.task.redeemTask);
 router.post('/getAchievements', controller.task.getAchievements);
-router.post('/redeemAchievement', controller.task.redeemAchivement);
+router.post('/redeemAchievement', controller.task.redeemAchievement);
 
 router.post('/pickJewel', controller.game.pickJewel);
 router.post('/getGameState', controller.game.getGameState);

@@ -13,7 +13,7 @@ module.exports = {
 				done(null, user[0] );
 			else{
 				let err = new Error('Verification code does not match');
-  			err.status = 403;
+  				err.status = 403;
 				done( err, null );
 			}
 		})
@@ -27,11 +27,17 @@ module.exports = {
 
 	serializeUser: function(user, done){
 
-		done(null, user.id );
+		console.log('Serialize:::'+user);
+		//done(null, session);
+		done(null, user.id);
 
 	},
 
-	deserializeUser: function(id, done){
+	deserializeUser: function(session, done){
+
+		console.log('Deserialize:::::'+session);
+		done(null, session);
+		/*
 
 		knex('users').where({id})
 		.select()
@@ -41,7 +47,8 @@ module.exports = {
 		.catch( err => {
 			done( err , null);
 		})
-
+		
+		*/
 		
 
 	},
