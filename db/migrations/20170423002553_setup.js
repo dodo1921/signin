@@ -19,6 +19,7 @@ exports.up = function(knex, Promise) {
       table.timestamp('updated_at').defaultTo(knex.fn.now());
       table.boolean('online').defaultTo(false);
       table.string('topic').nullable();
+      
       table.unique(['phone']);
       table.unique(['sessionId']);
       table.index(['reference']);

@@ -13,6 +13,8 @@ module.exports = {
 		.then( user => {
 			if(user[0].vcode === verificationCode){
 
+				memcached.del(user[0].sessionId, err=>{});
+
 				knex('users').where({id:user[0].id}).update({sessionId: req.session.id, active: true })
 				.then( () => {
 					user[0].sessionId = req.session.id;
