@@ -10,15 +10,15 @@ var controller = require('../controllers');
 
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-	console.log('OMG:::'+req.session.user.sessionId);
+router.get('/',  function(req, res, next) {
+	console.log('OMG:::'+req.session.id);
   	return res.json({ message : 'hello'});
 });
 
 
 router.post('/registerPhoneNumber', controller.registration.registerPhoneNumber);
 router.post('/verifyCode', controller.registration.verifyCode);
-router.post('/initialDetails', controller.registration.initialDetails);
+router.post('/initialDetails', passportUtils.isAuthenticated, controller.registration.initialDetails);
 router.get('/resendVcode', controller.registration.resendVcode);
 router.post('/inviteUser', controller.registration.inviteUser);
 router.post('/updateGcmToken', controller.registration.updateGcmToken);

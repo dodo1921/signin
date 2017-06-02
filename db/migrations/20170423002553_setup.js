@@ -4,7 +4,7 @@ exports.up = function(knex, Promise) {
 
   return knex.schema.createTable('users', function(table){
       table.increments('id');
-      table.string('sessionId').nullable(); 
+      table.string('sessionId', 33).notNull(); 
       table.bigInteger('phone').unsigned().notNull();
       table.string('vcode').nullable();      
       table.string('name').nullable();
@@ -17,7 +17,10 @@ exports.up = function(knex, Promise) {
       table.boolean('is_rooted').nullable();      
       table.timestamp('created_at').defaultTo(knex.fn.now());
       table.timestamp('updated_at').defaultTo(knex.fn.now());
+      table.boolean('online').defaultTo(false);
+      table.string('topic').nullable();
       table.unique(['phone']);
+      table.unique(['sessionId']);
       table.index(['reference']);
       table.index(['sessionId']);
 

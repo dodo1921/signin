@@ -29,7 +29,13 @@ module.exports = {
   },
   production: {
     client: 'mysql',
-    connection: process.env.DATABASE_URL,
+    connection: {
+      host: process.env.durl,
+      user: process.env.dusername,
+      password: process.env.dpassword,
+      database: 'jewelchat',
+      charset: 'utf8'
+    },
     migrations: {
       directory: __dirname + '/db/migrations'
     },

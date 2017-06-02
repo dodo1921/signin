@@ -28,11 +28,11 @@ var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-
+app.set('trust proxy', 1)
 app.use(session({ secret: 'ilovescotchscotchyscotchscotch',
   resave: false, 
   saveUninitialized: false,
-  cookie: { maxAge: 6000000000000 },
+  cookie: { maxAge: 6000000000000, httpOnly: false },
   store: new jcstore({}) })); 
 //app.use(express.static(path.join(__dirname, 'public')));
 

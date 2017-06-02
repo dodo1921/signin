@@ -13,10 +13,10 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 	let phone = req.body.phone;
 
-	knex('users').where({phone}).first()
+	knex('users').where({phone}).select()
 	.then( user =>{
 
-		if( user && user.length>0 ){	
+		if( user.length>0 ){	
 
 					//send sms vcode
 
@@ -71,7 +71,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 			//insert new user
 			let se = speakeasy.totp({key: 'secret'});
-			knex.returning('id').table('users').insert({ phone, vcode:se })
+			knex.returning('id').table('users').insert({ phone, vcode:se, sessionId: req.session.id })
 			.then(id => {
 				//send sms vcode	
 
@@ -124,9 +124,9 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 registration.verifyCode= function(req, res, next) {
 
-		passport.authenticate('local', (err, user, info) => {
+			passport.authenticate('local', (err, user, info) => {
         if (err) next(err);
-        console.log(JSON.stringify(user));
+        //console.log(JSON.stringify(user));
         req.logIn(user, function(err) {      
             if (err) next(err);
             //initial jewels
@@ -135,7 +135,20 @@ registration.verifyCode= function(req, res, next) {
             //create tasks
             //create achivements
 
-            return res.json({ error : false }); 
+
+            //console.log(JSON.stringify(req.session));
+            
+            
+            		
+            		
+  					return res.json({ error : false });	
+					
+						
+
+
+
+            //return res.json({ error : false });
+             
         });
 		    
     })(req, res, next);  

@@ -1,6 +1,8 @@
 'use strict';
 
 let knex = require('../db/knex');
+let memcached = require('./memcache');
+
 
 module.exports = {
 
@@ -9,8 +11,19 @@ module.exports = {
 		knex('users').where({id: userId})
 		.select()
 		.then( user => {
-			if(user[0].vcode === verificationCode)
-				done(null, user[0] );
+			if(user[0].vcode === verificationCode){
+
+				knex('users').where({id:user[0].id}).update({sessionId: req.session.id, active: true })
+				.then( () => {
+					user[0].sessionId = req.session.id;
+					memcached.set( req.session.id, user[0], 300, err =>{} );									
+					done(null, user[0] );
+				})
+				.catch( err => {
+					done( err , null);
+				})
+				
+			}
 			else{
 				let err = new Error('Verification code does not match');
   				err.status = 403;
@@ -33,10 +46,10 @@ module.exports = {
 
 	},
 
-	deserializeUser: function(session, done){
+	deserializeUser: function(id, done){
 
-		console.log('Deserialize:::::'+session);
-		done(null, session);
+		console.log('Deserialize:::::'+id);
+		done(null, id);
 		/*
 
 		knex('users').where({id})
@@ -62,7 +75,7 @@ module.exports = {
 
 		}else{      
 		        
-		  res.status(403).json({ success: false, data: 'Auth Error'});
+		  return res.status(403).json({ success: false, data: 'Auth Error'});
 		        
 		}
 

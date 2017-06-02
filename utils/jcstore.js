@@ -2,6 +2,8 @@
 
 let knex = require('../db/knex');
 
+let memcached = require('./memcache');
+
 
 
 /**
@@ -45,25 +47,48 @@ module.exports = function(session) {
      */
     jcstore.prototype.get = function(sid, callback) {
 
-    	console.log('GET::::'+sid);
+		    	     console.log('GET::::'+sid);
 
-    	this.client('users').where({sessionId: sid})
-		.select()
-		.then( user => {
-			if(user.length>0){
-				let u = {};
-				u.user = user[0];
-				u.cookie = { originalMaxAge:6000000000000, expires : '2207-07-21T01:27:21.276Z' , httpOnly :true, path :"/" };
-				u.passport = { user: user[0].id };
-				callback(null, u );
-			}
-			else
-				callback(null, {});
-		})
-		.catch( err => {
-			callback(err, null);
-		});
-    };
+          memcached.get(sid , (err, data) =>{
+
+              if(err || data===undefined){
+
+                      this.client('users').where({sessionId: sid})
+                      .select()
+                      .then( user => {
+                        if(user.length>0){
+                          memcached.set(sid, user[0], 900, err=>{});
+                          let u = {};
+                          u.user = user[0];
+                          u.cookie = { originalMaxAge:6000000000000, expires : '2207-07-21T01:27:21.276Z' , httpOnly :false, path :"/" };
+                          u.passport = { user: user[0].id };
+                          callback(null, u );
+                        }
+                        else{
+                          let u = {};         
+                          u.cookie = { originalMaxAge:6000000000000, expires : '2207-07-21T01:27:21.276Z' , httpOnly :false, path :"/" };
+                          callback(null, u);
+                        }
+                      })
+                      .catch( err => {
+                        callback(err, null);
+                      });
+
+
+
+              }else{
+                      let u = {};
+                      u.user = data;
+                      u.cookie = { originalMaxAge:6000000000000, expires : '2207-07-21T01:27:21.276Z' , httpOnly :false, path :"/" };
+                      u.passport = { user: data.id };
+                      callback(null, u );
+              }
+
+          });    
+
+		    	
+
+	  };
 
     /**
      * Commit the given `sess` object associated with the given `sid`.
@@ -77,17 +102,29 @@ module.exports = function(session) {
 
     	console.log( 'SET:::' + sid + '>>>>>' + JSON.stringify(sess) );
 
-        this.client('users').where({id: sess.passport.user})
-		.update({sessionId: sid})
-		.then( () => {
-			
-				callback(null);
-		})
-		.catch( err => {
-			callback(err);
-		});
 
-		callback();
+    	if(sess.passport.user){
+
+        if(sess.user && sess.user.sessionId !== sid){
+          console('SET Inside');
+	        this.client('users').where({ id: sess.passport.user })
+					.update({sessionId: sid })
+					.then( () => {
+						
+							callback(null);
+					})
+					.catch( err => {
+						callback(err);
+					});
+
+        }
+        else
+          callback();  
+
+			}else{
+				callback();
+			}
+		
 
     };
 
