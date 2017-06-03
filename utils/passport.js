@@ -3,6 +3,8 @@
 let knex = require('../db/knex');
 let memcached = require('./memcache');
 
+let speakeasy = require('speakeasy');
+
 
 module.exports = {
 
@@ -13,12 +15,13 @@ module.exports = {
 		.then( user => {
 			if(user[0].vcode === verificationCode){
 
-				memcached.del(user[0].sessionId, err=>{});
-
-				knex('users').where({id:user[0].id}).update({sessionId: req.session.id, active: true })
-				.then( () => {
-					user[0].sessionId = req.session.id;
-					memcached.set( req.session.id, user[0], 300, err =>{} );									
+				//memcached.del(user[0].sessionId, err=>{});
+				let se = speakeasy.totp({key: 'secret'});
+				knex('users').where({id:user[0].id}).update({ active: true, scode: se })
+				.then( () => {		
+					user[0].scode = se;
+					user[0].active = 1;			
+					memcached.set( user[0].id, user[0], 300, err =>{} );									
 					done(null, user[0] );
 				})
 				.catch( err => {
@@ -44,7 +47,7 @@ module.exports = {
 
 		console.log('Serialize:::'+user);
 		//done(null, session);
-		done(null, user.id);
+		done(null, user);
 
 	},
 

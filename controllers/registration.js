@@ -5,6 +5,10 @@ let speakeasy = require('speakeasy');
 let request = require('request');
 let passport = require('passport');
 
+let signature = require('cookie-signature');
+
+let cookie = require('cookie');
+
 
 let registration = module.exports;
 
@@ -50,12 +54,12 @@ registration.registerPhoneNumber = function(req, res, next) {
 								}, 600000);
 								*/
 
-								if( user[0].active ){									
-
+								if( user[0].active ){		
+										
 										return res.json({ error: false, userId: user[0].id, active: true });
 
 								}else{
-
+										
 										return res.json({ error: false, userId: user[0].id, active: false });
 								}
 
@@ -71,7 +75,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 			//insert new user
 			let se = speakeasy.totp({key: 'secret'});
-			knex.returning('id').table('users').insert({ phone, vcode:se, sessionId: req.session.id })
+			knex.returning('id').table('users').insert({ phone, vcode:se })
 			.then(id => {
 				//send sms vcode	
 
@@ -99,7 +103,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 								}, 600000);
 
 								*/
-
+								
 								return res.json({ error: false, userId: id[0], active: false });				
 
 
@@ -139,8 +143,14 @@ registration.verifyCode= function(req, res, next) {
             //console.log(JSON.stringify(req.session));
             
             
-            		
-            		
+            var signed = 's:' + signature.sign( user.id + '::::' + user.scode , 'ilovescotchscotchyscotchscotch');
+					  var data = cookie.serialize('connect.sid', signed, {});  
+
+					  var prev = res.getHeader('jc-cookie') || [];
+					  var header = Array.isArray(prev) ? prev.concat(data) : [prev, data];		
+
+					  res.setHeader('jc-cookie', header);	
+            	
   					return res.json({ error : false });	
 					
 						

@@ -5,66 +5,72 @@ var passport = require('passport');
 
 var passportUtils = require('../utils/passport');
 
+var jccookie = require('../utils/jccookie');
+
 var controller = require('../controllers');
+
+const signature = require('cookie-signature');
+
+var cookie = require('cookie');
 
 
 
 /* GET home page. */
-router.get('/',  function(req, res, next) {
-	console.log('OMG:::'+req.session.id);
+router.get('/', jccookie.cookie, function(req, res, next) {
+		console.log('OMG:::'+req.session.id);		
   	return res.json({ message : 'hello'});
 });
 
 
 router.post('/registerPhoneNumber', controller.registration.registerPhoneNumber);
 router.post('/verifyCode', controller.registration.verifyCode);
-router.post('/initialDetails', passportUtils.isAuthenticated, controller.registration.initialDetails);
+router.post('/initialDetails', passportUtils.isAuthenticated, jccookie.cookie ,controller.registration.initialDetails);
 router.get('/resendVcode', controller.registration.resendVcode);
-router.post('/inviteUser', controller.registration.inviteUser);
-router.post('/updateGcmToken', controller.registration.updateGcmToken);
-router.get('/getChildren', controller.registration.getChildren);
+router.post('/inviteUser', passportUtils.isAuthenticated, jccookie.cookie ,controller.registration.inviteUser);
+router.post('/updateGcmToken', passportUtils.isAuthenticated, jccookie.cookie ,controller.registration.updateGcmToken);
+router.get('/getChildren',passportUtils.isAuthenticated, jccookie.cookie , controller.registration.getChildren);
 
 
-router.get('/getRegisteredContacts', controller.contacts.getRegisteredContacts);
-router.get('/getProfile', controller.contacts.getProfile);
-router.get('/getUserProfile', controller.contacts.getUserProfile);
-router.post('/addPic', controller.contacts.addPic);
-router.post('/updateProfilePic', controller.contacts.updateProfilePic);
-router.post('/updateProfileStatus', controller.contacts.updateProfileStatus);
+router.get('/getRegisteredContacts',passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.getRegisteredContacts);
+router.get('/getProfile',passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.getProfile);
+router.get('/getUserProfile', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.getUserProfile);
+router.post('/addPic', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.addPic);
+router.post('/updateProfilePic', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.updateProfilePic);
+router.post('/updateProfileStatus', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.updateProfileStatus);
 
-router.post('/getGroups', controller.groups.getGroups);
+router.post('/getGroups', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.getGroups);
 
-router.post('/createGroups', controller.groups.createGroups);
-router.post('/addNewMembers', controller.groups.addNewMembers);
-router.post('/leaveGroup', controller.groups.leaveGroup);
+router.post('/createGroups', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.createGroups);
+router.post('/addNewMembers', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.addNewMembers);
+router.post('/leaveGroup', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.leaveGroup);
 
-router.post('/getAllGroupChatMessages', controller.chats.getAllGroupChatMessages );
-router.post('/getAllChatMessages', controller.chats.getAllChatMessages );
+router.post('/getAllGroupChatMessages', passportUtils.isAuthenticated, jccookie.cookie , controller.chats.getAllGroupChatMessages );
+router.post('/getAllChatMessages', passportUtils.isAuthenticated, jccookie.cookie , controller.chats.getAllChatMessages );
 
-router.post('/getTasks', controller.task.getTasks);
-router.post('/getTaskElements', controller.task.getTaskElements)
-router.post('/redeemTask', controller.task.redeemTask);
-router.post('/getAchievements', controller.task.getAchievements);
-router.post('/redeemAchievement', controller.task.redeemAchievement);
+router.post('/getTasks', passportUtils.isAuthenticated, jccookie.cookie , controller.task.getTasks);
+router.post('/getTaskElements', passportUtils.isAuthenticated, jccookie.cookie , controller.task.getTaskElements)
+router.post('/redeemTask', passportUtils.isAuthenticated, jccookie.cookie , controller.task.redeemTask);
+router.post('/getAchievements', passportUtils.isAuthenticated, jccookie.cookie , controller.task.getAchievements);
+router.post('/redeemAchievement', passportUtils.isAuthenticated, jccookie.cookie , controller.task.redeemAchievement);
 
-router.post('/pickJewel', controller.game.pickJewel);
-router.post('/getGameState', controller.game.getGameState);
+router.post('/pickJewel', passportUtils.isAuthenticated, jccookie.cookie , controller.game.pickJewel);
+router.post('/getGameState', passportUtils.isAuthenticated, jccookie.cookie , controller.game.getGameState);
 
-router.post('/getFactories', controller.game.getFactories);
-router.post('/getFactoryMaterials', controller.game.getFactoryMaterials);
-router.post('/startFactory', controller.game.startFactory);
-router.post('/stopFactory', controller.game.stopFactory);
-router.post('/getJewelFromFactory', controller.game.getJewelFromFactory);
+router.post('/getFactories', passportUtils.isAuthenticated, jccookie.cookie , controller.game.getFactories);
+router.post('/getFactoryMaterials', passportUtils.isAuthenticated, jccookie.cookie , controller.game.getFactoryMaterials);
+router.post('/startFactory', passportUtils.isAuthenticated, jccookie.cookie , controller.game.startFactory);
+router.post('/stopFactory', passportUtils.isAuthenticated, jccookie.cookie , controller.game.stopFactory);
+router.post('/getJewelFromFactory', passportUtils.isAuthenticated, jccookie.cookie , controller.game.getJewelFromFactory);
 
-router.post('/getMarket', controller.game.getMarket);
-router.post('/getMyShop', controller.game.getMyShop);
-router.post('/addToShop', controller.game.addToShop);
-router.post('/getUserShop', controller.game.getUserShop);
+router.post('/getMarket', passportUtils.isAuthenticated, jccookie.cookie , controller.game.getMarket);
+router.post('/getMyShop', passportUtils.isAuthenticated, jccookie.cookie , controller.game.getMyShop);
+router.post('/addToShop', passportUtils.isAuthenticated, jccookie.cookie , controller.game.addToShop);
+router.post('/getUserShop', passportUtils.isAuthenticated, jccookie.cookie , controller.game.getUserShop);
 
-router.post('/getWallet', controller.wallet.getWallet );
-router.post('/redeemMoney', controller.wallet.redeemMoney);
-router.post('/buyDiamonds', controller.wallet.buyDiamonds);
-router.post('/buyCoins', controller.wallet.buyCoins);
+router.post('/getWallet', passportUtils.isAuthenticated, jccookie.cookie , controller.wallet.getWallet );
+router.post('/redeemMoney', passportUtils.isAuthenticated, jccookie.cookie , controller.wallet.redeemMoney);
+router.post('/buyDiamonds', passportUtils.isAuthenticated, jccookie.cookie , controller.wallet.buyDiamonds);
+router.post('/buyCoins', passportUtils.isAuthenticated, jccookie.cookie , controller.wallet.buyCoins);
 
 
 

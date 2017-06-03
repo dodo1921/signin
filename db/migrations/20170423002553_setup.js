@@ -3,10 +3,10 @@
 exports.up = function(knex, Promise) {  
 
   return knex.schema.createTable('users', function(table){
-      table.increments('id');
-      table.string('sessionId', 33).notNull(); 
+      table.increments('id');      
       table.bigInteger('phone').unsigned().notNull();
-      table.string('vcode').nullable();      
+      table.string('vcode').nullable(); 
+      table.string('scode').nullable();      
       table.string('name').nullable();
       table.string('status', 1000).nullable();
       table.string('pic').nullable();
@@ -21,9 +21,9 @@ exports.up = function(knex, Promise) {
       table.string('topic').nullable();
       
       table.unique(['phone']);
-      table.unique(['sessionId']);
+      
       table.index(['reference']);
-      table.index(['sessionId']);
+      
 
     })
   .then(() => {
