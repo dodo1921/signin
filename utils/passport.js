@@ -16,7 +16,7 @@ module.exports = {
 			if(user[0].vcode === verificationCode){
 
 				//memcached.del(user[0].sessionId, err=>{});
-				let se = speakeasy.totp({key: 'secret'});
+				let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});
 				knex('users').where({id:user[0].id}).update({ active: true, scode: se })
 				.then( () => {		
 					user[0].scode = se;

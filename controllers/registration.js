@@ -24,7 +24,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 					//send sms vcode
 
-					let se = speakeasy.totp({key: 'secret'});
+					let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});;
 
 					knex('users').where({phone}).update({vcode:se})
 					.then(()=>{
@@ -74,7 +74,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 		}else{
 
 			//insert new user
-			let se = speakeasy.totp({key: 'secret'});
+			let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});
 			knex.returning('id').table('users').insert({ phone, vcode:se })
 			.then(id => {
 				//send sms vcode	
@@ -151,7 +151,7 @@ registration.verifyCode= function(req, res, next) {
 
 					  res.setHeader('jc-cookie', header);	
             	
-  					return res.json({ error : false });	
+  					return res.json({ error : false, request : 'verifyCode' });	
 					
 						
 
@@ -191,7 +191,7 @@ registration.initialDetails= function(req, res, next) {
 		if(req.body.reference)
 			upd.reference = req.body.reference;
 
-		knex('users').where({id: req.user.id}).update(upd)
+		knex('users').where({id: req.session.user.id}).update(upd)
 		.then(()=>{
 				res.json({ error: false });
 		})
@@ -206,7 +206,7 @@ registration.resendVcode= function(req, res, next) {
 
   	let phone = req.user.phone;
 
-  	let se = speakeasy.totp({key: 'secret'});
+  	let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});;
 
 		knex('users').where({phone}).update({vcode:se})
 		.then(()=>{
@@ -235,7 +235,7 @@ registration.resendVcode= function(req, res, next) {
 
 					*/
 					
-					res.json({ error: false });
+					res.json({ error: false, request: 'resendVcode' });
 
 		})
 		.catch( err =>{

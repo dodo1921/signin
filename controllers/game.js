@@ -129,19 +129,28 @@ game.getGameState = function(req, res, next) {
 };
 
 game.getFactories = function(req, res, next) {
+
+  var subquery = knex('factoryuser')
+                 .where({ user_id: req.session.user.id})
+                 .orderBy('factoryuser.id', 'asc')
+                 .select('factory_id')
+                 .limit(5).offset(req.body.page * 5);
   
-  	knex('factoryuser').where({ user_id: req.user.id })
-    .orderBy('factoryuser.id', 'asc')
-  	.join('factory', 'factoryuser.factory_id', '=', 'factory.id')
-  	//.join('factorymaterial', 'factoryuser.factory_id', '=', 'factorymaterial.factory_id' )
-  	.select()
-    .limit(8).offset(req.body.page * 8)
-  	.then(fac => {
-  		res.json({error: false, factory : fac});
-  	})
-  	.catch(err => {
-  		next(err);
-  	});
+  knex('factoryuser').whereIn('factoryuser.factory_id', subquery)
+  .join('factory', 'factoryuser.factory_id', '=', 'factory.id')
+  .join('factorymaterial', 'factoryuser.factory_id', '=', 'factorymaterial.factory_id' )    
+  .select('factory.id as id', 'factory.jeweltype_id as jtype_id', 'factory.level as level'
+    , 'factory.duration as duration', 'factoryuser.start_time as start_time', 'factoryuser.is_on as is_on'
+    , 'factorymaterial.jeweltype_id as jeweltype_id', 'factorymaterial.count as count')    
+  .groupBy('factory.id')     
+  .then(fac => {      
+      return res.json({error: false, fac });        
+  })
+  .catch(err => {
+    next(err);
+  });
+  
+  	
 	
 
 };

@@ -184,6 +184,7 @@ exports.up = function(knex, Promise) {
       table.boolean('done').defaultTo(false);
 
       table.index(['user_id']);
+      table.index(['task_id']);
       table.foreign('task_id').references('tasks.id');
       table.foreign('user_id').references('users.id');      
     })
@@ -224,6 +225,8 @@ exports.up = function(knex, Promise) {
       table.integer('factory_id').unsigned().notNull();
       table.integer('jeweltype_id').unsigned().notNull();
       table.integer('count').notNull(); 
+
+      table.index(['factory_id']);
       
       table.foreign('factory_id').references('factory.id'); 
       table.foreign('jeweltype_id').references('jeweltype.id');     
@@ -236,6 +239,9 @@ exports.up = function(knex, Promise) {
       table.integer('user_id').unsigned().notNull();      
       table.timestamp('start_time').nullable();
       table.boolean('is_on').nullable();
+
+      table.index(['factory_id']);
+      table.index(['user_id']);
       table.foreign('factory_id').references('factory.id'); 
       table.foreign('user_id').references('users.id');      
     })
