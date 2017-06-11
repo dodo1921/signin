@@ -137,13 +137,7 @@ exports.seed = function(knex, Promise) {
         min_cost: 5000
       });
   })
-  .then(()=>{
-      return knex('jeweltype').insert({
-        id: 18,
-        name: 'j16',
-        min_cost: 5000
-      });
-  })
+  
 
 
   

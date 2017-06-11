@@ -9,6 +9,8 @@ let signature = require('cookie-signature');
 
 let cookie = require('cookie');
 
+let initializeGame = reference('initializeGame');
+
 
 let registration = module.exports;
 
@@ -46,13 +48,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 								*/
 
-								/*
-								setTimeout(function(){
-									//set vcode to null
-									knex('users').where({phone}).update({vcode:null})
-
-								}, 600000);
-								*/
+								
 
 								if( user[0].active ){		
 										
@@ -95,14 +91,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 								  }
 								});
 								*/
-								/*
-								setTimeout(function(){
-									//set vcode to null
-									knex('users').where({phone}).update({vcode:null});
-
-								}, 600000);
-
-								*/
+								
 								
 								return res.json({ error: false, userId: id[0], active: false });				
 
@@ -133,6 +122,9 @@ registration.verifyCode= function(req, res, next) {
         //console.log(JSON.stringify(user));
         req.logIn(user, function(err) {      
             if (err) next(err);
+
+            if(!user.initialized)
+            	initializeGame(user.id);
             //initial jewels
             //initial scores
             //create factories

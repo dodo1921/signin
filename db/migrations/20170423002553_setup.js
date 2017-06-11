@@ -14,6 +14,7 @@ exports.up = function(knex, Promise) {
       table.string('token_google').nullable();
       table.string('token_apple').nullable();      
       table.boolean('active').defaultTo(false);
+      table.boolean('initialized').defaultTo(false);
       table.boolean('is_rooted').nullable();      
       table.timestamp('created_at').defaultTo(knex.fn.now());
       table.timestamp('updated_at').defaultTo(knex.fn.now());
@@ -239,7 +240,7 @@ exports.up = function(knex, Promise) {
       table.integer('factory_id').unsigned().notNull();
       table.integer('user_id').unsigned().notNull();      
       table.timestamp('start_time').nullable();
-      table.boolean('is_on').nullable();
+      table.boolean('is_on').defaultTo(false);
 
       table.index(['factory_id']);
       table.index(['user_id']);
