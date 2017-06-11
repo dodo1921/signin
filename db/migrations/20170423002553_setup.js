@@ -211,6 +211,7 @@ exports.up = function(knex, Promise) {
     return knex.schema.createTable('factory', function(table){
       table.increments('id');
       table.integer('jeweltype_id').unsigned().notNull();
+      table.integer('count').notNull();
       table.integer('level').notNull();
       table.integer('diamond').notNull(); 
       table.integer('duration').notNull();

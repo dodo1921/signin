@@ -13,15 +13,22 @@ exports.seed = function(knex, Promise) {
   )
   .then(()=>{
       return knex('jeweltype').insert({
-        id: 1,
+        id: 0,
         name: 'diamond',
         min_cost: 5000
       });
   })
   .then(()=>{
       return knex('jeweltype').insert({
-        id: 2,
+        id: 1,
         name: 'coin',
+        min_cost: 5000
+      });
+  })
+  .then(()=>{
+      return knex('jeweltype').insert({
+        id: 2,
+        name: 'referred user',
         min_cost: 5000
       });
   })
@@ -106,6 +113,34 @@ exports.seed = function(knex, Promise) {
       return knex('jeweltype').insert({
         id: 14,
         name: 'j12',
+        min_cost: 5000
+      });
+  })
+  .then(()=>{
+      return knex('jeweltype').insert({
+        id: 15,
+        name: 'j13',
+        min_cost: 5000
+      });
+  })
+  .then(()=>{
+      return knex('jeweltype').insert({
+        id: 16,
+        name: 'j14',
+        min_cost: 5000
+      });
+  })
+  .then(()=>{
+      return knex('jeweltype').insert({
+        id: 17,
+        name: 'j15',
+        min_cost: 5000
+      });
+  })
+  .then(()=>{
+      return knex('jeweltype').insert({
+        id: 18,
+        name: 'j16',
         min_cost: 5000
       });
   })

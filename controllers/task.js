@@ -51,17 +51,16 @@ task.redeemTask= function(req, res, next) {
 
 task.getAchievements= function(req, res, next) {
   
-	knex('achievementusers').where({ user_id: req.user.id })
+	knex('achievementusers').where({ user_id: req.session.user.id })
   	.join('achievements', 'achievementusers.achievement_id', '=', 'achievements.id')
   	//.join('taskdetails', 'taskusers.task_id', '=', 'taskdetails.task_id' )
   	.orderBy('achievementusers.level', 'asc')
   	.select()
   	.limit(8).offset(req.body.page * 8)
   	.then(achievements => {
-  		if(achievements.length >= 8)
-  			res.json({error: false, achievements, page: (req.body.page+1) });
-  		else
-  			res.json({error: false, achievements});	
+  		
+  			res.json({error: false, achievements });
+  		
   	})
   	.catch(err => {
   		next(err);
