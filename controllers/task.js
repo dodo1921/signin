@@ -8,11 +8,13 @@ let task = module.exports;
 
 task.getTasks = function(req, res, next) {
 
-  var subquery = knex('taskusers')
+  let subquery1 = knex('taskusers')
                  .where({ user_id: req.session.user.id , done : false })
                  .orderBy('taskusers.id', 'desc')
                  .select('task_id')
                  .limit(5).offset(req.body.page * 5);
+
+  let subquery =  knex.raw('select * from ( '+subquery1+' ) temp_tab');                 
   
 	knex('taskusers').whereIn('taskusers.task_id', subquery)
 	.join('tasks', 'taskusers.task_id', '=', 'tasks.id')

@@ -9,7 +9,7 @@ let signature = require('cookie-signature');
 
 let cookie = require('cookie');
 
-let initializeGame = reference('initializeGame');
+let initializeGame = require('../utils/initializeGame');
 
 
 let registration = module.exports;
