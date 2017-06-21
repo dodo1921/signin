@@ -18,7 +18,7 @@ let registration = module.exports;
 registration.registerPhoneNumber = function(req, res, next) {
 
 	let phone = req.body.phone;
-
+	console.log('>>>>'+phone);
 	knex('users').where({phone}).select()
 	.then( user =>{
 
@@ -29,26 +29,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 					let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});;
 
 					knex('users').where({phone}).update({vcode:se})
-					.then(()=>{
-
-								/*
-
-								let sms = 'CitiTalk verification PIN '+se;
-								let encoded_sms = encodeURI(sms);
-								
-								let req_string = 'http://enterprise.smsgupshup.com/GatewayAPI/rest?method=SendMessage&send_to='+user[0].phone+'&msg='+encoded_sms+'&msg_type=TEXT&userid=2000152880&auth_scheme=plain&password=qwerty123&v=1.1&format=text'
-								request(req_string, function (error, response, body) {
-									if(error) {
-										console.log('SMS GUPSHUP error:::'+ user[0].phone+ '::' + se);								
-									}
-								  if (!error && response.statusCode == 200) {
-								    
-								  }
-								});
-
-								*/
-
-								
+					.then(()=>{								
 
 								if( user[0].active ){		
 										
@@ -69,39 +50,17 @@ registration.registerPhoneNumber = function(req, res, next) {
 			
 		}else{
 
-			//insert new user
-			let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});
-			knex.returning('id').table('users').insert({ phone, vcode:se })
-			.then(id => {
-				//send sms vcode	
-
-					
-								/*
-
-								let sms = 'CitiTalk verification PIN '+se;
-								let encoded_sms = encodeURI(sms);
-								
-								let req_string = 'http://enterprise.smsgupshup.com/GatewayAPI/rest?method=SendMessage&send_to='+phone+'&msg='+encoded_sms+'&msg_type=TEXT&userid=2000152880&auth_scheme=plain&password=qwerty123&v=1.1&format=text'
-								request(req_string, function (error, response, body) {
-									if(error) {
-										console.log('SMS GUPSHUP error:::'+ user[0].phone+ '::' + se);								
-									}
-								  if (!error && response.statusCode == 200) {
-								    
-								  }
-								});
-								*/
-								
-								
-								return res.json({ error: false, userId: id[0], active: false });				
-
-
-
-				
-			})
-			.catch( err => {
-				next(err);
-			});			
+					//insert new user
+					let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});
+					knex.returning('id').table('users').insert({ phone, vcode:se, name: 'defaultJCUname' })
+					.then(id => {								
+										
+										return res.json({ error: false, userId: id[0], active: false });
+						
+					})
+					.catch( err => {
+						next(err);
+					});			
 
 
 		}
@@ -123,6 +82,8 @@ registration.verifyCode= function(req, res, next) {
         req.logIn(user, function(err) {      
             if (err) next(err);
 
+            let t = new Date(); 
+            
             if(!user.initialized)
             	initializeGame(user.id);
             //initial jewels
@@ -141,13 +102,9 @@ registration.verifyCode= function(req, res, next) {
 					  var prev = res.getHeader('jc-cookie') || [];
 					  var header = Array.isArray(prev) ? prev.concat(data) : [prev, data];		
 
-					  res.setHeader('jc-cookie', header);	
-            	
-  					return res.json({ error : false, request : 'verifyCode' });	
-					
-						
+					  res.setHeader('jc-cookie', header);
 
-
+  					return res.json({ error : false, request : 'verifyCode', created_at: t.getTime() });
 
             //return res.json({ error : false });
              
@@ -161,7 +118,7 @@ registration.verifyCode= function(req, res, next) {
 registration.checkValidReference= function(req, res, next) {	
 			
 
-		knex('users').where({id: req.body.reference}).select()
+		knex('users').where({ phone: req.body.reference}).select()
 		.then( user=>{
 				if(user.length>0)
 					res.json({ error: false, is_valid: true  });
@@ -180,12 +137,14 @@ registration.initialDetails= function(req, res, next) {
 
 		let upd = {};
 		upd.name = req.body.name;
-		if(req.body.reference)
-			upd.reference = req.body.reference;
+		if(req.body.reference){
+			if(req.session.user.phone !== parseInt(req.body.reference))
+				upd.reference = req.body.reference;
+		}
 
 		knex('users').where({id: req.session.user.id}).update(upd)
 		.then(()=>{
-				res.json({ error: false });
+				res.json({ error: false, name: req.body.name });
 		})
 		.catch( err =>{
 			next(err);
@@ -196,27 +155,16 @@ registration.initialDetails= function(req, res, next) {
 registration.resendVcode= function(req, res, next) {
 
 
-  	let phone = req.user.phone;
+  	let id = req.body.userId;
+
+  	console.log('Resendvcode>>'+id);
 
   	let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});;
 
-		knex('users').where({phone}).update({vcode:se})
+		knex('users').where({id}).update({vcode:se})
 		.then(()=>{
 
-					let sms = 'CitiTalk verification PIN '+se;
-					let encoded_sms = encodeURI(sms);
 					
-					let req_string = 'http://enterprise.smsgupshup.com/GatewayAPI/rest?method=SendMessage&send_to='+phone+'&msg='+encoded_sms+'&msg_type=TEXT&userid=2000152880&auth_scheme=plain&password=qwerty123&v=1.1&format=text'
-					request(req_string, function (error, response, body) {
-
-							if(error) {
-								console.log('SMS GUPSHUP error:::'+ phone + '::' + se);								
-							}
-						  if (!error && response.statusCode == 200) {
-						    
-						  }
-
-					});
 
 					/*
 					setTimeout(function(){

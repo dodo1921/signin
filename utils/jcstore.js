@@ -51,7 +51,7 @@ module.exports = function(session) {
 
           let parts = sid.split('::::');
 
-          if(parts.length!=2){
+          if(parts.length!=2){            
             let u = {};
             u.cookie = { originalMaxAge:6000000000000, expires : '2207-07-21T01:27:21.276Z' , httpOnly :false, path :"/" };
             callback(null, u);

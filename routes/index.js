@@ -16,8 +16,9 @@ var cookie = require('cookie');
 
 
 /* GET home page. */
-router.get('/', jccookie.cookie, function(req, res, next) {
-		console.log('OMG:::'+req.session.id);		
+router.get('/',  function(req, res, next) {
+		//console.log('OMG:::'+req.session.id);		
+		console.log('UFFFF');
   	return res.json({ message : 'hello'});
 });
 
@@ -25,7 +26,7 @@ router.get('/', jccookie.cookie, function(req, res, next) {
 router.post('/registerPhoneNumber', controller.registration.registerPhoneNumber);
 router.post('/verifyCode', controller.registration.verifyCode);
 router.post('/initialDetails', passportUtils.isAuthenticated, jccookie.cookie ,controller.registration.initialDetails);
-router.get('/resendVcode', controller.registration.resendVcode);
+router.post('/resendVcode', controller.registration.resendVcode);
 router.post('/inviteUser', passportUtils.isAuthenticated, jccookie.cookie ,controller.registration.inviteUser);
 router.post('/updateGcmToken', passportUtils.isAuthenticated, jccookie.cookie ,controller.registration.updateGcmToken);
 router.get('/getChildren',passportUtils.isAuthenticated, jccookie.cookie , controller.registration.getChildren);

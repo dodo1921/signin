@@ -95,7 +95,7 @@ exports.up = function(knex, Promise) {
       table.integer('type').notNull();
       table.integer('chat_id').nullable();
       table.integer('jeweltype_id').unsigned().nullable();      
-      table.bigInteger('created_at').notNull();
+      table.bigInteger('created_at').unsigned().notNull();
       //table.index([ 'sender_id' ]);
       table.index([ 'receiver_id' ]);
       table.index([ 'receiver_id', 'created_at' ]);
