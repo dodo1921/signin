@@ -73,6 +73,8 @@ router.post('/redeemMoney', passportUtils.isAuthenticated, jccookie.cookie , con
 router.post('/buyDiamonds', passportUtils.isAuthenticated, jccookie.cookie , controller.wallet.buyDiamonds);
 router.post('/buyCoins', passportUtils.isAuthenticated, jccookie.cookie , controller.wallet.buyCoins);
 
+router.get('/generateTasks', controller.task.generateTasks);
+
 
 
 	

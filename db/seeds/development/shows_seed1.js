@@ -52,7 +52,7 @@ exports.seed = function(knex, Promise) {
         return knex.table('tasks')
                    .returning('id')
                    .insert({
-                      points:80, coins:20, money: 1
+                      points:80, coins:20, money: 1.0
                    })
                    .then(function(id){
 

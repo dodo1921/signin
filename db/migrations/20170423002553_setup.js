@@ -162,7 +162,8 @@ exports.up = function(knex, Promise) {
       table.integer('coins').nullable();
       table.integer('points').notNull();
       table.decimal('money', [5], [2] ).defaultTo(0.00).nullable();
-      table.integer('level').nullable();
+      table.integer('level').defaultTo(0);
+      table.integer('qty').nullable();
       table.timestamp('created_at').defaultTo(knex.fn.now());       
     })
   })
@@ -183,6 +184,7 @@ exports.up = function(knex, Promise) {
       table.increments('id');
       table.integer('task_id').unsigned().notNull();
       table.integer('user_id').unsigned().notNull();
+      table.boolean('show_money').defaultTo(true);
       table.boolean('done').defaultTo(false);
 
       table.index(['user_id']);
