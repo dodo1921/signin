@@ -116,11 +116,11 @@ game.pickJewel = function(req, res, next) {
 game.getGameState = function(req, res, next) {
   	
 	  Promise.all([
-	  	knex('scores').where({ user_id: req.user.id }).select(),
-	  	knex('jewels').where({ user_id: req.user.id }).select()
+	  	knex('scores').where({ user_id: req.session.user.id }).select(),
+	  	knex('jewels').where({ user_id: req.session.user.id }).select()
 	  ])	
 		.then((values)=>{
-			res.json({ error: false, scores: values[0], jewels: values[1] });
+			return res.json({ error: false, scores: values[0], jewels: values[1] });
 		})
 		.catch( err => {
 			next(err);
@@ -145,7 +145,7 @@ game.getFactories = function(req, res, next) {
     , 'factory.duration as duration', 'factoryuser.start_time as start_time', 'factoryuser.is_on as is_on'
     , 'factorymaterial.jeweltype_id as jeweltype_id', 'factorymaterial.count as count')      
   .then(fac => {      
-      return res.json({error: false, fac });        
+      return res.json({error: false ,fac });        
   })
   .catch(err => {
     next(err);

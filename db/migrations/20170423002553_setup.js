@@ -87,7 +87,8 @@ exports.up = function(knex, Promise) {
     return knex.schema.createTable('chats', function(table){
       table.increments('id');
       table.integer('sender_id').unsigned().notNull(); 
-      table.integer('sender_msgid').notNull(); 
+      table.integer('sender_msgid').notNull();
+      table.bigInteger('sender_phone').unsigned().notNull();
       table.integer('receiver_id').unsigned().nullable(); 
       table.string('eventname').notNull();         
       table.string('msg', 5000).nullable(); 
@@ -102,15 +103,15 @@ exports.up = function(knex, Promise) {
       
       table.foreign('sender_id').references('users.id');
       table.foreign('receiver_id').references('users.id');      
-      table.foreign('jeweltype_id').references('jeweltype.id');  
-
+      table.foreign('jeweltype_id').references('jeweltype.id');
     })
   })
   .then(() => {
     return knex.schema.createTable('groupchats', function(table){
       table.increments('id');
       table.integer('sender_id').unsigned().notNull();
-      table.integer('sender_msgid').notNull();        
+      table.integer('sender_msgid').notNull(); 
+      table.bigInteger('sender_phone').unsigned().notNull();       
       table.integer('group_id').unsigned().nullable();  
       table.string('eventname').notNull();     
       table.string('msg', 5000).nullable(); 

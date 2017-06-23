@@ -36,17 +36,20 @@ chats.getAllGroupChatMessages = function(req, res, next) {
 
 chats.getAllChatMessages = function(req, res, next) {
   
-		let lastonetooneid = req.body.lastonetooneid;
+		let created_at = req.body.created_at;
 		let page = req.body.page;
+
+		let today = new Date();
+		let created_time = new Date(created_at);	
 		
-		knex('chats').where( { receiver_id : req.user.id } ).andWhere('id', '>', lastonetooneid )
+		knex('chats').where( { receiver_id : req.session.user.id } ).andWhere('created_at', '>', created_at )
 		.orderBy('id', 'asc').select().limit(20).offset(page * 20)
 		.then( chats => {
 				
-				if( chats.length>=20)
-					res.json({ error: false, chats, pageno: (page + 1) });
+				if( chats.length>=20 )
+					return res.json({ error: false, chats, pageno: (page + 1) });
 				else 
-					res.json({ error: false, chats });
+					return res.json({ error: false, chats, pageno: -1 });
 
 		})
 		.catch(err => {
