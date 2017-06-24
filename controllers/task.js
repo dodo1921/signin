@@ -50,7 +50,7 @@ task.redeemTask= function(req, res, next) {
   let taskusers_id = req.body.id;
   let user_id = req.session.user.id;
 
-  let t_id, materials, points, coins, money, qty, level, expires_at;
+  let t_id, materials, points, coins, money, qty, level, expires_at, max_level_points, p, score_level;
   let user_materials, user_level, current_date = new Date();
 
   let show_money;
@@ -74,7 +74,8 @@ task.redeemTask= function(req, res, next) {
       money = task[0].money;
       qty = task[0].qty;
       level = task[0].level;
-      expires_at = task[0].duration;   
+      expires_at = task[0].duration;  
+
 
       if(qty === null)
         continue;
@@ -87,10 +88,14 @@ task.redeemTask= function(req, res, next) {
         throw new Error('Task expired');
 
 
-      return knex('scores').where({ user_id: req.session.user.id }).select();
+      return knex('scores').where({ user_id }).select();
 
   })
   .then(score => {
+
+    max_level_points = score[0].max_level_points; 
+    p = score[0].points;
+    score_level = score[0].level;
 
     if(score.level<level)
       throw new Error('Invalid operation');
@@ -113,6 +118,11 @@ task.redeemTask= function(req, res, next) {
             .decrement('count', details[j].count).transacting(trx);
 
             p.push(t);
+
+            if(details[j].jeweltype_id == 0){
+              t = knex('diamondlog').where({ user_id , count : -(details[j].count), logtext: 'Task Completed....'+taskusers_id }).transacting(trx);
+              p.push(t);
+            }
           }
 
             if( qty === null )
@@ -128,19 +138,34 @@ task.redeemTask= function(req, res, next) {
             t = knex('taskusers').where({id:taskusers_id }).update({'done': true}).transacting(trx);
             p.push(t);
 
+            if(p+point<=max_level_points){
+              t = knex('scores').where({user_id }).increment('points', points).transacting(trx);
+              p.push(t);
+            }else{
+              t = knex('scores').where({user_id }).update({ points : (p + points - max_level_points) }).transacting(trx);
+              p.push(t);
+              t = knex('scores').where({user_id }).increment('level', 1).transacting(trx);
+              p.push(t);
+              t = knex('scores').where({user_id }).update({ max_level_points: level_max[score_level]}).transacting(trx);
+              p.push(t);
+            }
 
-            t = knex('scores').where({user_id }).update({points}).transacting(trx);
+            t = knex('scores').where({user_id }).increment('points', points).transacting(trx);
             p.push(t);
 
-            t = knex('jewels').where({ user_id, jeweltype_id: 1 }).increment({ count: coins }).transacting(trx);
+            t = knex('jewels').where({ user_id, jeweltype_id: 1 }).increment('count', coins }).transacting(trx);
             p.push(t);
 
-            t = knex('jewels').where({ user_id, jeweltype_id: 1 }).increment({ total_count: coins }).transacting(trx);
+            t = knex('jewels').where({ user_id, jeweltype_id: 1 }).increment('total_count', coins ).transacting(trx);
             p.push(t);
 
-            if(show_money && money>0)
-            t = knex('wallet').where({ user_id }).increment({ total_count: coins }).transacting(trx);
-            p.push(t);
+            if(show_money && money>0){
+              t = knex('wallet').where({ user_id }).increment('money', money ).transacting(trx);
+              p.push(t);
+
+              t = knex('walletlog').insert({ user_id, money }).transacting(trx);
+              p.push(t);
+            }  
 
             t = knex('taskusers').where({id:taskusers_id }).update({'done': true}).transacting(trx);
             p.push(t);
@@ -155,7 +180,7 @@ task.redeemTask= function(req, res, next) {
 
         for( let i=0; i<values.length; i++ ){
           if(values[i] == 0 )
-            new Error('Transaction failed');
+            throw new Error('Transaction failed');
         }
 
         return true;
@@ -166,6 +191,8 @@ task.redeemTask= function(req, res, next) {
         trx.rollback
         throw err;
       });
+
+      return res.json({ error: false, message: 'Successfully task completed' });
 
   })  
   .catch( err => {
@@ -196,6 +223,65 @@ task.getAchievements= function(req, res, next) {
 };
 
 task.redeemAchievement = function(req, res, next) {
+
+  let a_id = req.body.id;
+  let user_id = req.body.user_id;
+
+  let level, id;
+
+  knex('achievementusers').where({ id: a_id }).select()
+  .then( achi => {
+
+    id = achi[0].achievement_id;
+    level = achi[0].level;
+
+    return knex('scores').where({ user_id }).select(); 
+
+  })
+  .then( score => {
+
+    if(score[0].level< level)
+      throw new Error('Illegal action');
+
+    
+    switch(id){
+
+      case 1: return knex('')
+
+    }
+
+
+  })
+  .then( val => {
+
+    let percent;
+
+    switch(id){
+
+      case 1: {
+        if(val[0].total_count < (level * 10)){
+          percent = (((level * 10) - val[0].total_count)*100)/val[0].total_count;
+          return res.json({ error: false, percent })
+        }
+        else{
+          return 
+        }
+
+      }
+      case 2:{
+
+      }
+
+    }
+
+
+  })
+  .catch( err => {
+
+
+
+  })
+
   
 	
 
