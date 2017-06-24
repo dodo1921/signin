@@ -135,20 +135,78 @@ registration.checkValidReference= function(req, res, next) {
 registration.initialDetails= function(req, res, next) {
 	
 
-		let upd = {};
+		let upd = {}; let ref_id;
 		upd.name = req.body.name;
 		if(req.body.reference){
-			if(req.session.user.phone !== parseInt(req.body.reference))
-				upd.reference = req.body.reference;
+			if(req.session.user.phone !== parseInt(req.body.reference)){
+					
+					knex('users').where({ phone: req.body.reference, initialized: true }).select('id')
+					.then( user=>{
+							if(user.length>0){
+								upd.reference = req.body.reference;	ref_id = user[0];						
+							}
+								
+					})
+					.catch( err =>{
+						
+					});
+
+			}
 		}
 
-		knex('users').where({id: req.session.user.id}).update(upd)
-		.then(()=>{
-				res.json({ error: false, name: req.body.name });
-		})
-		.catch( err =>{
-			next(err);
-		});	
+		if(upd.reference && ref_id ){
+
+				knex.transaction( trx => {
+
+						knex('users').where({ id: req.session.user.id }).update(upd).transacting(trx)
+						.then( () => {
+
+							return knex('jewels').where({ user_id: ref_id, jeweltype_id: 2 }).increment('count', 1).transacting(trx)
+
+						})
+						.then( () => {
+
+							return knex('jewels').where({ user_id: ref_id, jeweltype_id: 2 }).increment('total_count', 1).transacting(trx)
+
+						})
+						.then( () => {
+
+							return knex('jewels').where({ user_id: req.session.user.id, jeweltype_id: 0 }).increment('total_count', 2).transacting(trx)
+
+						})
+						.then( () => {
+
+							return knex('jewels').where({ user_id: req.session.user.id, jeweltype_id: 0 }).increment('count', 2).transacting(trx)
+
+						})
+						.then( () => {
+
+							return knex('diamondlog').where({ user_id: req.session.user.id}).update({ count : 2, logtext: 'Reference Number entry'}).transacting(trx)
+
+						})
+						.then(trx.commit)
+        		.catch(trx.rollback);
+
+				})   
+				.then( values => {
+    				return res.json({ error: false, name: req.body.name });
+			  })
+			  .catch( err => {
+			    next(err);
+			  });
+
+
+		}else{
+
+				knex('users').where({ id: req.session.user.id }).update(upd)
+				.then(()=>{
+						return res.json({ error: false, name: req.body.name });
+				})
+				.catch( err =>{
+					next(err);
+				});	
+
+		}	
 
 };
 

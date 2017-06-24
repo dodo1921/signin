@@ -43,6 +43,14 @@ exports.seed = function(knex, Promise) {
   .then(()=>{
       return knex('jewels').insert({
         user_id: 1,
+        jeweltype_id: 2,
+        count: 50,
+        total_count: 50              
+      });
+  })
+  .then(()=>{
+      return knex('jewels').insert({
+        user_id: 1,
         jeweltype_id: 3,
         count: 5,
         total_count: 5              
