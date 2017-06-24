@@ -195,9 +195,10 @@ exports.up = function(knex, Promise) {
   })
   .then(() => {
     return knex.schema.createTable('achievements', function(table){
-      table.increments('id');
+      table.integer('id').unsigned().notNull().primary();
       table.integer('diamond').notNull();
-      table.string('text').notNull();           
+      table.string('text').notNull();
+      table.string('note').nullable();           
     })
   })
   .then(() => {
@@ -205,7 +206,7 @@ exports.up = function(knex, Promise) {
       table.increments('id');
       table.integer('achievement_id').unsigned().notNull();
       table.integer('user_id').unsigned().notNull();
-      table.integer('level').notNull(); 
+      table.integer('level').defaultTo(2); 
       
       table.index(['achievement_id']);
       table.foreign('achievement_id').references('achievements.id');      
