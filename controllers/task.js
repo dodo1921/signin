@@ -19,7 +19,7 @@ task.getTasks = function(req, res, next) {
 	knex('taskusers').whereIn('taskusers.task_id', subquery)
 	.join('tasks', 'taskusers.task_id', '=', 'tasks.id')
 	.join('taskdetails', 'taskusers.task_id', '=', 'taskdetails.task_id' )  	
-	.select('tasks.id as id', 'tasks.duration as duration', 'tasks.coins as coins', 'tasks.points as points'
+	.select( 'taskusers.id as id','tasks.id as task_id', 'tasks.duration as duration', 'tasks.coins as coins', 'tasks.points as points'
     , 'tasks.money as money', 'tasks.level as level', 'tasks.created_at as created_at'
     , 'taskdetails.jeweltype_id as jeweltype_id', 'taskdetails.count as count', 'taskusers.done as done' )
   .groupBy('tasks.id')    	
@@ -46,6 +46,131 @@ task.getTaskElements= function(req, res, next) {
 };
 
 task.redeemTask= function(req, res, next) {
+
+  let taskusers_id = req.body.id;
+  let user_id = req.session.user.id;
+
+  let t_id, materials, points, coins, money, qty, level, expires_at;
+  let user_materials, user_level, current_date = new Date();
+
+  let show_money;
+
+  knex('taskusers').where({id:taskusers_id}).select()
+  .then(taskuser => {
+
+    if(taskuser.length == 0)
+      throw new Error('Invalid Task');
+
+    show_money = taskuser[0].show_money;
+
+    return knex('tasks').where({ id:taskuser[0].task_id }).select();
+
+  })  
+  .then(task=>{
+
+      t_id = task[0].id;
+      points = task[0].points;
+      coins = task[0].coins;
+      money = task[0].money;
+      qty = task[0].qty;
+      level = task[0].level;
+      expires_at = task[0].duration;   
+
+      if(qty === null)
+        continue;
+      else if(qty == 0)
+         throw new Error('Task expired');    
+
+      let e = new Date(expires_at);
+
+      if(e < current_date)
+        throw new Error('Task expired');
+
+
+      return knex('scores').where({ user_id: req.session.user.id }).select();
+
+  })
+  .then(score => {
+
+    if(score.level<level)
+      throw new Error('Invalid operation');
+
+    return knex('taskdetails').where({ task_id: t_id }).select('jeweltype_id', 'count');
+
+  })
+  .then( details => {
+
+
+
+    
+      knex.transaction( trx => {
+
+          let p = []; let t;
+
+          for(let j=0; j<details.length; j++){
+            t = knex('jewels').where({ user_id, jeweltype_id: details[j].jeweltype_id })
+            .andWhere('count', '>', details[j].count )
+            .decrement('count', details[j].count).transacting(trx);
+
+            p.push(t);
+          }
+
+            if( qty === null )
+              continue;
+            else{
+              t = knex('tasks').where({ id: t_id })
+              .andWhere('qty', '>', 0 )
+              .decrement('qty', 1).transacting(trx);
+
+              p.push(t);
+            }
+
+            t = knex('taskusers').where({id:taskusers_id }).update({'done': true}).transacting(trx);
+            p.push(t);
+
+
+            t = knex('scores').where({user_id }).update({points}).transacting(trx);
+            p.push(t);
+
+            t = knex('jewels').where({ user_id, jeweltype_id: 1 }).increment({ count: coins }).transacting(trx);
+            p.push(t);
+
+            t = knex('jewels').where({ user_id, jeweltype_id: 1 }).increment({ total_count: coins }).transacting(trx);
+            p.push(t);
+
+            if(show_money && money>0)
+            t = knex('wallet').where({ user_id }).increment({ total_count: coins }).transacting(trx);
+            p.push(t);
+
+            t = knex('taskusers').where({id:taskusers_id }).update({'done': true}).transacting(trx);
+            p.push(t);
+
+
+
+            return Promise.all(p);  
+
+
+      })
+      .then( values => {
+
+        for( let i=0; i<values.length; i++ ){
+          if(values[i] == 0 )
+            new Error('Transaction failed');
+        }
+
+        return true;
+
+      })
+      .then(trx.commit)
+      .catch(err => {
+        trx.rollback
+        throw err;
+      });
+
+  })  
+  .catch( err => {
+    next(err);
+  })
   
 	
 
