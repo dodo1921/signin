@@ -3,6 +3,9 @@
 let knex = require('../db/knex');
 let Promise = require('bluebird');
 
+let level_max = [55, 164, 194, 142, 76, 80, 172, 289, 346, 313, 241, 220,290, 410, 491, 481, 411, 367, 412, 526, 627, 643, 583, 523, 541, 642, 
+756, 799, 755, 685, 677, 759, 879, 947, 942, 853, 820 879, 997, 1088, 1090 ];
+
 let task = module.exports;
 
 
@@ -104,9 +107,6 @@ task.redeemTask= function(req, res, next) {
 
   })
   .then( details => {
-
-
-
     
       knex.transaction( trx => {
 
@@ -222,6 +222,33 @@ task.getAchievements= function(req, res, next) {
 
 };
 
+
+function complete_achievement(diamonds, a_id, user_id){
+
+  knex.transaction( trx => {    
+
+    knex('jewel').where({user_id, jeweltype_id: 0 }).increment('count', diamonds).transacting(trx)
+    .then( () => {
+      return knex('jewel').where({user_id, jeweltype_id: 0 }).increment('total_count', diamonds).transacting(trx);
+    })
+    .then( () => {
+      return knex('achievementusers').where({ id: a_id }).increment( 'level', 5).transacting(trx);
+    })
+    .then( trx.commit)
+    .catch(trx.rollback)
+
+  })
+  .then( () => {
+    return res.json({ error:false, percent: 100 });
+  })
+  catch(err => {
+    next(err);
+  });
+  
+
+  
+}
+
 task.redeemAchievement = function(req, res, next) {
 
   let a_id = req.body.id;
@@ -246,7 +273,97 @@ task.redeemAchievement = function(req, res, next) {
     
     switch(id){
 
-      case 1: return knex('')
+      case 1: return knex('invite').where({user_id}).count( 'invitee as i' );
+      case 2: return knex('jewel').where({user_id, jeweltype_id: 2}).select('total_count');
+      case 3: return knex('jewel').where({user_id, jeweltype_id: 3}).select('total_count');
+      case 4: return knex('jewel').where({user_id, jeweltype_id: 4}).select('total_count');
+      case 5: return knex('jewel').where({user_id, jeweltype_id: 5}).select('total_count');
+      case 6: return knex('jewel').where({user_id, jeweltype_id: 6}).select('total_count');
+      case 7: return knex('jewel').where({user_id, jeweltype_id: 7}).select('total_count');
+      case 8: return knex('jewel').where({user_id, jeweltype_id: 8}).select('total_count');
+      case 9: return knex('jewel').where({user_id, jeweltype_id: 9}).select('total_count');
+      case 10: return knex('jewel').where({user_id, jeweltype_id: 10}).select('total_count');
+      case 11: return knex('jewel').where({user_id, jeweltype_id: 11}).select('total_count');
+      case 12: return knex('jewel').where({user_id, jeweltype_id: 12}).select('total_count');
+      case 13: return knex('jewel').where({user_id, jeweltype_id: 13}).select('total_count');
+      case 14: return knex('jewel').where({user_id, jeweltype_id: 14}).select('total_count');
+      case 15: return knex('jewel').where({user_id, jeweltype_id: 15}).select('total_count');
+      case 16: return knex('jewel').where({user_id, jeweltype_id: 16}).select('total_count');
+      case 17: return knex('jewel').where({user_id, jeweltype_id: 17}).select('total_count');
+
+      case 18: return knex('users').where( 'users.reference' , req.session.user.phone )
+                  .join('score', 'users.id', '=', 'score.user_id')
+                  .where( 'score.level', '>=', 5 )
+                  .count('users.id as ref');
+
+      case 19: return knex('users').where( 'users.reference' , req.session.user.phone )
+                  .join('score', 'users.id', '=', 'score.user_id')
+                  .where( 'score.level', '>=', 10 )
+                  .count('users.id as ref');
+
+      case 20: return knex('users').where( 'users.reference' , req.session.user.phone )
+                  .join('score', 'users.id', '=', 'score.user_id')
+                  .where( 'score.level', '>=', 15 )
+                  .count('users.id as ref');
+                  
+      case 21: return knex('users').where( 'users.reference' , req.session.user.phone )
+                  .join('score', 'users.id', '=', 'score.user_id')
+                  .where( 'score.level', '>=', 20 )
+                  .count('users.id as ref');
+                  
+      case 22: return knex('users').where( 'users.reference' , req.session.user.phone )
+                  .join('score', 'users.id', '=', 'score.user_id')
+                  .where( 'score.level', '>=', 25 )
+                  .count('users.id as ref');
+
+      case 23: return knex('users').where( 'users.reference' , req.session.user.phone )
+                  .join('score', 'users.id', '=', 'score.user_id')
+                  .where( 'score.level', '>=', 30 )
+                  .count('users.id as ref');
+
+      case 24: return knex('users').where( 'users.reference' , req.session.user.phone )
+                  .join('score', 'users.id', '=', 'score.user_id')
+                  .where( 'score.level', '>=', 40 )
+                  .count('users.id as ref');
+                  
+      case 25: return knex('users').where( 'users.reference' , req.session.user.phone )
+                  .join('score', 'users.id', '=', 'score.user_id')
+                  .where( 'score.level', '>=', 50 )
+                  .count('users.id as ref');
+                  
+      case 26: return knex('users').where( 'users.reference' , req.session.user.phone )
+                  .join('score', 'users.id', '=', 'score.user_id')
+                  .where( 'score.level', '>=', 60 )
+                  .count('users.id as ref');
+                                                                                          
+      case 27: return knex('users').where( 'users.reference' , req.session.user.phone )
+                  .join('score', 'users.id', '=', 'score.user_id')
+                  .where( 'score.level', '>=', 70 )
+                  .count('users.id as ref');
+                              
+      case 28: return knex('users').where( 'users.reference' , req.session.user.phone )
+                  .join('score', 'users.id', '=', 'score.user_id')
+                  .where( 'score.level', '>=', 80 )
+                  .count('users.id as ref');
+      case 29: return knex('users').where( 'users.reference' , req.session.user.phone )
+                  .join('score', 'users.id', '=', 'score.user_id')
+                  .where( 'score.level', '>=', 90 )
+                  .count('users.id as ref');
+      
+      case 30: return knex('users').where( 'users.reference' , req.session.user.phone )
+                  .join('score', 'users.id', '=', 'score.user_id')
+                  .where( 'score.level', '>=', 100 )
+                  .count('users.id as ref');
+
+      case 31: return knex('users').where( 'users.reference' , req.session.user.phone )
+                  .join('score', 'users.id', '=', 'score.user_id')
+                  .where( 'score.level', '>=', 110 )
+                  .count('users.id as ref');
+      
+      case 32: return knex('users').where( 'users.reference' , req.session.user.phone )
+                  .join('score', 'users.id', '=', 'score.user_id')
+                  .where( 'score.level', '>=', 120 )
+                  .count('users.id as ref');                                                                                                                 
 
     }
 
@@ -259,23 +376,299 @@ task.redeemAchievement = function(req, res, next) {
     switch(id){
 
       case 1: {
-        if(val[0].total_count < (level * 10)){
-          percent = (((level * 10) - val[0].total_count)*100)/val[0].total_count;
-          return res.json({ error: false, percent })
-        }
-        else{
-          return 
-        }
+          if(val[0].i < (level)){
+            percent = ( val[0].i * 100 )/ level;
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
 
+          break;
       }
       case 2:{
+          if(val[0].i < (level)){
+            percent = ( val[0].i * 100 )/ level;
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
 
+          break;
       }
+      case 3:{
+          if(val[0].total_count < (level * 10)){
+            percent = ( val[0].total_count * 100 )/ (level * 10);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 4:{
+          if(val[0].total_count < (level * 10)){
+            percent = ( val[0].total_count * 100 )/ (level * 10);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 5:{
+          if(val[0].total_count < (level * 10)){
+            percent = ( val[0].total_count * 100 )/ (level * 10);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 6:{
+          if(val[0].total_count < (level * 10)){
+            percent = ( val[0].total_count * 100 )/ (level * 10);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 7:{
+          if(val[0].total_count < (level * 10)){
+            percent = ( val[0].total_count * 100 )/ (level * 10);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 8:{
+          if(val[0].total_count < (level * 10)){
+            percent = ( val[0].total_count * 100 )/ (level * 10);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 9:{
+          if(val[0].total_count < (level * 10)){
+            percent = ( val[0].total_count * 100 )/ (level * 10);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }      
+      case 10:{
+          if(val[0].total_count < (level * 10)){
+            percent = ( val[0].total_count * 100 )/ (level * 10);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 11:{
+          if(val[0].total_count < (level * 10)){
+            percent = ( val[0].total_count * 100 )/ (level * 10);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 12:{
+          if(val[0].total_count < (level * 10)){
+            percent = ( val[0].total_count * 100 )/ (level * 10);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 13:{
+          if(val[0].total_count < (level * 10)){
+            percent = ( val[0].total_count * 100 )/ (level * 10);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 14:{
+          if(val[0].total_count < (level * 10)){
+            percent = ( val[0].total_count * 100 )/ (level * 10);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 15:{
+          if(val[0].total_count < (level * 10)){
+            percent = ( val[0].total_count * 100 )/ (level * 10);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 16:{
+          if(val[0].total_count < (level * 10)){
+            percent = ( val[0].total_count * 100 )/ (level * 10);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 17:{
+          if(val[0].total_count < (level * 10)){
+            percent = ( val[0].total_count * 100 )/ (level * 10);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 18:{
+          if(val[0].ref < (level)){
+            percent = ( val[0].ref * 100 )/ (level);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(2, a_id, user_id);
+
+          break;
+      }
+      case 19:{
+          if(val[0].ref < (level)){
+            percent = ( val[0].ref * 100 )/ (level);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(2, a_id, user_id);
+
+          break;
+      }
+      case 20:{
+          if(val[0].ref < (level)){
+            percent = ( val[0].ref * 100 )/ (level);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(2, a_id, user_id);
+
+          break;
+      }
+      case 21:{
+          if(val[0].ref < (level)){
+            percent = ( val[0].ref * 100 )/ (level);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(2, a_id, user_id);
+
+          break;
+      }
+      case 22:{
+          if(val[0].ref < (level)){
+            percent = ( val[0].ref * 100 )/ (level);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(2, a_id, user_id);
+
+          break;
+      }
+      case 23:{
+          if(val[0].ref < (level)){
+            percent = ( val[0].ref * 100 )/ (level);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 24:{
+          if(val[0].ref < (level)){
+            percent = ( val[0].ref * 100 )/ (level);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 25:{
+          if(val[0].ref < (level)){
+            percent = ( val[0].ref * 100 )/ (level);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 26:{
+          if(val[0].ref < (level)){
+            percent = ( val[0].ref * 100 )/ (level);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 27:{
+          if(val[0].ref < (level)){
+            percent = ( val[0].ref * 100 )/ (level);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 28:{
+          if(val[0].ref < (level)){
+            percent = ( val[0].ref * 100 )/ (level);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 29:{
+          if(val[0].ref < (level)){
+            percent = ( val[0].ref * 100 )/ (level);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 30:{
+          if(val[0].ref < (level)){
+            percent = ( val[0].ref * 100 )/ (level);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 31:{
+          if(val[0].ref < (level)){
+            percent = ( val[0].ref * 100 )/ (level);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      case 32:{
+          if(val[0].ref < (level)){
+            percent = ( val[0].ref * 100 )/ (level);
+            return res.json({ error: false, percent })
+          }
+          else complete_achievement(1, a_id, user_id);
+
+          break;
+      }
+      
 
     }
 
 
-  })
+  })  
   .catch( err => {
 
 
@@ -285,7 +678,7 @@ task.redeemAchievement = function(req, res, next) {
   
 	
 
-};
+};// redeem achievement
 
 function points(type, count){
 
