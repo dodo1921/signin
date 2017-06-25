@@ -27,7 +27,7 @@ task.getTasks = function(req, res, next) {
     , 'taskdetails.jeweltype_id as jeweltype_id', 'taskdetails.count as count', 'taskusers.done as done' )
   .groupBy('tasks.id')    	
 	.then(tasks => {  		
-			return res.json({error: false, tasks });  			
+			return res.json({error: false, tasks, time: new Date() });  			
 	})
 	.catch(err => {
 		next(err);
@@ -120,7 +120,7 @@ task.redeemTask= function(req, res, next) {
             p.push(t);
 
             if(details[j].jeweltype_id == 0){
-              t = knex('diamondlog').where({ user_id , count : -(details[j].count), logtext: 'Task Completed....'+taskusers_id }).transacting(trx);
+              t = knex('diamondlog').insert({ user_id , count : -(details[j].count), logtext: 'Task Completed....'+taskusers_id }).transacting(trx);
               p.push(t);
             }
           }
@@ -148,15 +148,18 @@ task.redeemTask= function(req, res, next) {
               p.push(t);
               t = knex('scores').where({user_id }).update({ max_level_points: level_max[score_level]}).transacting(trx);
               p.push(t);
-            }
+            }    
 
-            t = knex('scores').where({user_id }).increment('points', points).transacting(trx);
-            p.push(t);
+            t = knex('pointlog').insert({ user_id, count: points, logtext: 'Task complete....'+taskusers_id }).transacting(trx);
+            p.push(t);        
 
             t = knex('jewels').where({ user_id, jeweltype_id: 1 }).increment('count', coins }).transacting(trx);
             p.push(t);
 
             t = knex('jewels').where({ user_id, jeweltype_id: 1 }).increment('total_count', coins ).transacting(trx);
+            p.push(t);
+
+            t = knex('coinlog').insert({ user_id, count: coins, logtext: 'Task complete....'+taskusers_id }).transacting(trx);
             p.push(t);
 
             if(show_money && money>0){
@@ -172,27 +175,55 @@ task.redeemTask= function(req, res, next) {
 
 
 
-            return Promise.all(p);  
+            Promise.all(p)
+            .then( values => {
+
+              for( let i=0; i<values.length; i++ ){
+                if(values[i] == 0 )
+                  throw new Error('Transaction failed');
+              }              
+
+            })
+            .then(trx.commit)
+            .catch(err => {
+              trx.rollback
+              throw err;
+            });
+
 
 
       })
-      .then( values => {
+      .then( () => {
 
-        for( let i=0; i<values.length; i++ ){
-          if(values[i] == 0 )
-            throw new Error('Transaction failed');
-        }
+          //check if money available
 
-        return true;
+          let t_id = Math.floor(Math.random() * (1000 - 10 + 1)) + 10;
+          knex('money').select()
+          .then( money => {
+              if(money[0]>10.00)
+                return knex('taskusers').insert({ user_id , task_id: t_id });
+              else{
+                knex('taskusers').insert({ user_id , task_id: t_id, show_money: false })
+                .then(()=>{})
+                .catch(()=>{})
+              }
+          })          
+          .then( val => {
+              return knex('task').where({id: t_id}).select('money');
+          })
+          .then( m => {
+              return knex('money').decrement('money', m[0]);
+          })
+          .catch( err => {
 
+          })
+
+        return res.json({ error: false, message: 'Successfully task completed' });
       })
-      .then(trx.commit)
       .catch(err => {
-        trx.rollback
-        throw err;
-      });
-
-      return res.json({ error: false, message: 'Successfully task completed' });
+        next(err);
+      })
+      
 
   })  
   .catch( err => {
@@ -662,17 +693,13 @@ task.redeemAchievement = function(req, res, next) {
           else complete_achievement(1, a_id, user_id);
 
           break;
-      }
-      
+      }     
 
     }
 
-
   })  
   .catch( err => {
-
-
-
+      next(err);
   })
 
   
@@ -821,13 +848,12 @@ task.generateTasks = function(req, res, next) {
                 knex('tasks').returning('id').insert({ points: sump, coins:sumc, money:summ }).transacting(trx)
                 .then( (id) =>{
 
-                    let a = []; let t;
+                   let a = []; let t;
 
                    for(let i=0; i<materials.length; i++){
                       //console.log( '>>>>'+id+'::::::'+materials[i][0]+'::::::::'+materials[i][1]);
                       t = knex.table('taskdetails').insert({task_id: id, jeweltype_id: materials[i][0], count: materials[i][1] }).transacting(trx);
                       a.push(t);
-
                       
                    } 
 

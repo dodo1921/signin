@@ -357,6 +357,13 @@ exports.up = function(knex, Promise) {
       table.foreign('user_id').references('users.id');
     })
   })
+  .then(() => {
+    return knex.schema.createTable('money', function(table){
+      
+      table.decimal('money', [15], [2]).defaultTo(0.00).notNull();
+
+    })
+  })
 
 
 };

@@ -425,6 +425,78 @@ module.exports = function(userid) {
               achievement_id: 20                          
             }).transacting(trx);
         })
+        .then(()=>{
+            return knex('achievementusers').insert({
+              user_id: userid,
+              achievement_id: 21                          
+            }).transacting(trx);
+        })
+        .then(()=>{
+            return knex('achievementusers').insert({
+              user_id: userid,
+              achievement_id: 22                          
+            }).transacting(trx);
+        })
+        .then(()=>{
+            return knex('achievementusers').insert({
+              user_id: userid,
+              achievement_id: 23                          
+            }).transacting(trx);
+        })
+        .then(()=>{
+            return knex('achievementusers').insert({
+              user_id: userid,
+              achievement_id: 24                          
+            }).transacting(trx);
+        })
+        .then(()=>{
+            return knex('achievementusers').insert({
+              user_id: userid,
+              achievement_id: 25                          
+            }).transacting(trx);
+        })
+        .then(()=>{
+            return knex('achievementusers').insert({
+              user_id: userid,
+              achievement_id: 26                          
+            }).transacting(trx);
+        })
+        .then(()=>{
+            return knex('achievementusers').insert({
+              user_id: userid,
+              achievement_id: 27                          
+            }).transacting(trx);
+        })
+        .then(()=>{
+            return knex('achievementusers').insert({
+              user_id: userid,
+              achievement_id: 28                          
+            }).transacting(trx);
+        })
+        .then(()=>{
+            return knex('achievementusers').insert({
+              user_id: userid,
+              achievement_id: 29                          
+            }).transacting(trx);
+        })
+        .then(()=>{
+            return knex('achievementusers').insert({
+              user_id: userid,
+              achievement_id: 30                          
+            }).transacting(trx);
+        })
+        .then(()=>{
+            return knex('achievementusers').insert({
+              user_id: userid,
+              achievement_id: 31                          
+            }).transacting(trx);
+        })
+        .then(()=>{
+            return knex('achievementusers').insert({
+              user_id: userid,
+              achievement_id: 32                          
+            }).transacting(trx);
+        })
         .then( () =>{
           return knex('users').where({ id: userid }).update({ initialized: true }).transacting(trx);
         })

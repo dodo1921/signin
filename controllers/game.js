@@ -8,28 +8,57 @@ let Promise = require('bluebird');
 
 function innerpickjewel( req, res, next, jewel ,msg_id, jeweltype){
 
-    if(jewel[0] === jeweltype ){
+    if(jewel[0].jeweltype_id === jeweltype ){
 
           knex('jewels')
-          .where({ user_id : req.user.id })
-          .andWhereNotIn('jeweltype_id', [1, 2])
+          .where({ user_id : req.session.user.id })
+          .andWhereNotIn('jeweltype_id', [ 0, 1, 2 ])
           .sum('count')
           .then( count => {
 
              if( count[0] < 25  ){
 
-                          let count = row[0].count+1;
-                          let total_count = row[0].total_count + 1;
-                          let t = knex.fn.now();
+                          knex.transaction( trx => {
 
-                          return knex('jewels')
-                          .where({ user_id : req.user.id, jeweltype_id : jeweltype })
-                          .update({ count, total_count, updated_at: t })
+                              let p = []; let t;
+
+                              t = knex('jewel').where({user_id: req.session.user.id, jeweltype_id: jeweltype })
+                                                .increment('count', 1).transacting(trx);
+                              p.push(t); 
+                              
+                              t = knex('jewel').where({user_id: req.session.user.id, jeweltype_id: jeweltype })
+                                                .increment('total_count', 1).transacting(trx);
+                              p.push(t);                           
+
+                              
+                              Promise.all(p)
+                              .then( values => {
+
+                                for( let i=0; i<values.length; i++ ){
+                                  console.log('>>>>>>>'+values[i]);
+                                  if(values[i] == 0 )
+                                    throw new Error('Transaction failed');
+                                }              
+
+                              })
+                              .then(trx.commit)
+                              .catch(err => {
+                                trx.rollback
+                                throw err;
+                              });
+
+                          })   
+                          .then( values => {
+                              return res.json({ error: false, message: 'Jewel added'});
+                          })
+                          .catch( err => {
+                            next(err);
+                          });
                           
                                          
 
              }else{
-                res.json({error: false, msg: 'Jewel Store Full'})  
+                throw new Error('Jewel Store is full')
              } 
 
           })
@@ -145,7 +174,7 @@ game.getFactories = function(req, res, next) {
     , 'factory.duration as duration', 'factoryuser.start_time as start_time', 'factoryuser.is_on as is_on'
     , 'factorymaterial.jeweltype_id as jeweltype_id', 'factorymaterial.count as count')      
   .then(fac => {      
-      return res.json({error: false ,fac });        
+      return res.json({error: false ,fac , time: new Date() });        
   })
   .catch(err => {
     next(err);
@@ -173,80 +202,216 @@ game.getFactoryMaterials= function(req, res, next) {
 
 game.startFactory = function(req, res, next) {
 
-  // rewrite and make it simple
-  
-/*
-  let materials;
-  knex('factoryuser').where({ factory_id: req.body.factory_id, user_id: req.user.id })  
-  .select( 'is_on')
-  .then( result => {    
+  let user_id = req.session.user.id;
+  let factory_id = req.body.id;
 
-    if(!result[0].is_on)
-      return knex('factorymaterial').where({ factory_id: req.body.factory_id })
-      .select( 'jeweltype_id' , 'count' );
-    else
-      return res.json({error: false, is_on : true, msg: 'Factory is on' });  
-  })  
-  .then( jewels => {
-      materials = jewels;
-      return Promise.map( jewels, jewel=>{
-          return knex('jewels')
-                .where({ user_id: req.user.id, jeweltype_id: jewel.jeweltype_id })
-                .first('count')          
-      });         
-  })
-  .then( jewelcounts => {
+  let ct;
 
-    let temps = [];
+  knex('factoryuser').where({ factory_id, user_id }).select()
+  .then(factoryuser => {
 
-    for(let i=0; i<jewelcounts.length; i++){
+    if(factoryuser.length == 0)
+      throw new Error('Invalid Factory');
 
-      if(materials[i].count > jewelcounts[i][0].count)
-        return res.json({error:false, is_on: false, msg: 'Not enough jewels in store'});
+    if(factoryuser[0].is_on)
+      throw new Error('Factory on');
 
-      temps.push({count: ( jewelcounts[i][0].count - materials[i].count ), jeweltype_id: materials[i].jeweltype_id })
-
-    }
-
-    knex.transaction(function(trx) {      
-
-          Promise.map(temps, temp => {                  
-                  return knex('jewels').where({ user_id: req.user.id, jeweltype_id: temp.jeweltype_id })
-                  .update({count: temp.count}).transacting(trx);
-          })
-          .then(()=>{
-            return knex('factoryuser')
-            .where({id: req.body.factoryuser_id, is_on: false })
-            .update({ is_on: true, start_time: knex.fn.now() }).transacting(trx);
-          })         
-          .then(trx.commit)
-          .catch(trx.rollback);
-
-    })
-    .then(function() {
-      return knex('factoryuser').where({id: req.body.factoryuser_id}).select();
-      
-    })
-    .then(fac => {
-      res.json({error: false, factory: fac , is_on: true });
-    })
-    .catch( err => {      
-      next(err);
-    });
-
-
+    return knex('factorymaterial').where({factory_id}).select()
 
   })
-  .catch( err => {
+  .then( materials => {
+
+        knex.transaction( trx => {
+
+            let p = []; let t;
+
+            for(let i=0; i<materials.length; i++){
+              t = knex('jewels').where({user_id, jeweltype_id: materials[i].jeweltype_id})
+                                .where('count', '>', materials[i].count ).decrement('count', materials[i].count)
+                                .transacting(trx);
+              p.push(t);
+              
+              if(materials[i].jeweltype_id == 1){
+                t =   knex('coinlog').insert({ user_id, count: -(materials[i].count), logtext: 'Factory Start....'+taskusers_id })
+                                     .transacting(trx);
+                p.push(t);
+              }                    
+            } 
+
+            ct = new Date();
+
+            t =   knex('factoryuser').where({ factory_id, user_id }).update({ is_on : true , start_time: ct })
+                                     .transacting(trx);
+            p.push(t);           
+
+            
+            Promise.all(p)
+            .then( values => {
+
+              for( let i=0; i<values.length; i++ ){
+                console.log('>>>>>>>'+values[i]);
+                if(values[i] == 0 )
+                  throw new Error('Transaction failed');
+              }              
+
+            })
+            .then(trx.commit)
+            .catch(err => {
+              trx.rollback
+              throw err;
+            });
+
+        })   
+        .then( values => {
+            return res.json({ error: false, start_time: ct });
+        })
+        .catch( err => {
+          next(err);
+        });
+
+  })
+  .catch(err => {
     next(err);
-  });
-  
-  
-	*/
+  })
+
+
 
 };
 
 game.stopFactory = function(req, res, next) {
+
+  let user_id = req.session.user.id;
+  let factory_id = req.body.id;
+
+  let current_time = new Date(); 
+  let st, st2 , duration, produce_count, factory_jewel_type, jewelstore_count, diamond_deduction_flag, diamond_required, diamond_u_have;
+
+
+  knex('factoryuser').where({ factory_id, user_id }).select()
+  .then(factoryuser => {
+
+    if(factoryuser.length == 0)
+      throw new Error('Invalid Factory');
+
+    if(!factoryuser[0].is_on)
+      throw new Error('Factory is not on');
+
+    if(!factoryuser[0].start_time){
+      //stop the factory
+      Knex('factoryuser').where({ factory_id, user_id }).update({is_on:false})
+      .then(val=>{
+        throw new Error('Invalid data');        
+      })
+      .catch(err=>{
+        next(err);
+      })
+    }else{
+      st = new Date(factoryuser[0].start_time);  
+      st2 = new Date(factoryuser[0].start_time);      
+      return knex('factory').where({factory_id}).select();
+    }
+
+  })
+  .then( factory => {
+
+    duration = factory[0].duration;
+    produce_count = factory[0].count;
+    diamond_required = factory[0].diamond;
+    factory_jewel_type = factory[0].jeweltype_id;
+
+    return knex('jewels').where({user_id}).select('jeweltype_id', 'count');
+
+  })
+  .then(jewelstore => {
+
+    jewelstore_count = 0;
+
+    for(let i=0; i < jewelstore.length; i++){
+
+      if(jewelstore[i].jeweltype_id == 0)
+        diamond_u_have = jewelstore[i].count;
+
+      if(jewelstore[i].jeweltype_id >=2)
+        jewelstore_count += jewelstore[i].count;
+
+    }
+
+    if(jewelstore_count+produce_count>25)
+      return new Error('Not enough Space');
+    st.setSeconds(st.getSeconds + duration) 
+    if( st > current_time )
+      diamond_deduction_flag = false;
+    else{
+      diamond_deduction_flag = true;
+      if(diamond_u_have<diamond_required)
+        throw new Error('Not Enough diamonds');
+    }
+
+
+        knex.transaction( trx => {
+
+            let p = []; let t;
+
+            t = knex('jewel').where({ user_id, jeweltype_id: factory_jewel_type }).increment('count', produce_count).transacting(trx); 
+            p.push(t);
+
+            t = knex('jewel').where({ user_id, jeweltype_id: factory_jewel_type }).increment('total_count', produce_count).transacting(trx); 
+            p.push(t); 
+
+            t = knex('factoryuser').where({ user_id, factory_id }).update({ is_on:false, start_time: null }).transacting(trx); 
+            p.push(t); 
+
+
+            if(diamond_deduction_flag){
+
+              t = knex('jewel').where({ user_id, jeweltype_id: 0 }).increment('count', diamond_required).transacting(trx); 
+              p.push(t); 
+
+              t = knex('jewel').where({ user_id, jeweltype_id: 0 }).increment('total_count', diamond_required).transacting(trx); 
+              p.push(t); 
+
+              t = knex('diamondlog').insert({ user_id , count : -(diamond_required), logtext: 'Factory stopped'+factory_id }).transacting(trx);
+              p.push(t);
+
+            }   
+
+            t = knex('factoryuser').where({ user_id, factory_id }).update({ is_on:false, start_time: null }).transacting(trx); 
+            p.push(t); 
+
+            t = knex('factorylogs').insert({ user_id, factory_id, start_time: st2, end_time: current_time, diamond_used: diamond_deduction_flag }).transacting(trx); 
+            p.push(t); 
+
+            
+            Promise.all(p)
+            .then( values => {
+
+              for( let i=0; i<values.length; i++ ){
+                console.log('>>>>>>>'+values[i]);
+                if(values[i] == 0 )
+                  throw new Error('Transaction failed');
+              }              
+
+            })
+            .then(trx.commit)
+            .catch(err => {
+              trx.rollback
+              throw err;
+            });
+
+        })   
+        .then( values => {
+            return res.json({ error: false, message: 'Factory stopped' });
+        })
+        .catch( err => {
+          next(err);
+        });
+      
+
+
+  })
+  .catch(err=>{
+    next(err);
+  })
   
 	
 
