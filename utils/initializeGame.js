@@ -42,6 +42,11 @@ module.exports = function(userid) {
             }).transacting(trx);
         })
         .then(()=>{
+            return knex('wallet').insert({
+              user_id: userid, money: 0.00               
+            }).transacting(trx);
+        })
+        .then(()=>{
             return knex('jewels').insert({
               user_id: userid,
               jeweltype_id: 0,
@@ -61,8 +66,8 @@ module.exports = function(userid) {
             return knex('jewels').insert({
               user_id: userid,
               jeweltype_id: 2,
-              count: 50,
-              total_count: 50              
+              count: 0,
+              total_count: 0              
             }).transacting(trx);
         })
         .then(()=>{

@@ -161,7 +161,7 @@ registration.initialDetails= function(req, res, next) {
 						knex('users').where({ id: req.session.user.id }).update(upd).transacting(trx)
 						.then( () => {
 
-							return knex('jewels').where({ user_id: ref_id, jeweltype_id: 2 }).increment('count', 1).transacting(trx)
+							return knex('jewels').where({ user_id: ref_id, jeweltype_id: 2 }).increment('count', 1).transacting(trx);
 
 						})
 						.then( () => {
@@ -181,7 +181,7 @@ registration.initialDetails= function(req, res, next) {
 						})
 						.then( () => {
 
-							return knex('diamondlog').where({ user_id: req.session.user.id}).update({ count : 2, logtext: 'Reference Number entry'}).transacting(trx)
+							return knex('diamondlog').insert({ user_id: req.session.user.id, count : 2, logtext: 'Reference Number entry'}).transacting(trx)
 
 						})
 						.then(trx.commit)

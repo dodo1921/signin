@@ -4,7 +4,7 @@ let knex = require('../db/knex');
 let Promise = require('bluebird');
 
 let level_max = [55, 164, 194, 142, 76, 80, 172, 289, 346, 313, 241, 220,290, 410, 491, 481, 411, 367, 412, 526, 627, 643, 583, 523, 541, 642, 
-756, 799, 755, 685, 677, 759, 879, 947, 942, 853, 820 879, 997, 1088, 1090 ];
+756, 799, 755, 685, 677, 759, 879, 947, 942, 853, 820, 879, 997, 1088, 1090 ];
 
 let task = module.exports;
 
@@ -53,12 +53,12 @@ task.redeemTask= function(req, res, next) {
   let taskusers_id = req.body.id;
   let user_id = req.session.user.id;
 
-  let t_id, materials, points, coins, money, qty, level, expires_at, max_level_points, p, score_level;
+  let t_id, materials, points, coins, money, qty, level, expires_at, max_level_points, pp, score_level;
   let user_materials, user_level, current_date = new Date();
 
   let show_money;
 
-  knex('taskusers').where({id:taskusers_id}).select()
+  knex('taskusers').where({id:taskusers_id, done: false }).select()
   .then(taskuser => {
 
     if(taskuser.length == 0)
@@ -80,16 +80,20 @@ task.redeemTask= function(req, res, next) {
       expires_at = task[0].duration;  
 
 
-      if(qty === null)
-        continue;
-      else if(qty == 0)
-         throw new Error('Task expired');    
+      
+      if(qty !== null && qty <= 0)
+         throw new Error('Task expired');   
 
-      let e = new Date(expires_at);
+      //if(expires_at === null)
+        //continue;
+      if(expires_at !== null){
 
-      if(e < current_date)
-        throw new Error('Task expired');
+        let e = new Date(expires_at);
 
+        if(e < current_date)
+          throw new Error('Task expired');
+      
+      }
 
       return knex('scores').where({ user_id }).select();
 
@@ -97,7 +101,7 @@ task.redeemTask= function(req, res, next) {
   .then(score => {
 
     max_level_points = score[0].max_level_points; 
-    p = score[0].points;
+    pp = score[0].points;
     score_level = score[0].level;
 
     if(score.level<level)
@@ -125,9 +129,9 @@ task.redeemTask= function(req, res, next) {
             }
           }
 
-            if( qty === null )
-              continue;
-            else{
+            //if( qty === null )
+            //  continue;
+            if( qty !== null ){
               t = knex('tasks').where({ id: t_id })
               .andWhere('qty', '>', 0 )
               .decrement('qty', 1).transacting(trx);
@@ -138,11 +142,14 @@ task.redeemTask= function(req, res, next) {
             t = knex('taskusers').where({id:taskusers_id }).update({'done': true}).transacting(trx);
             p.push(t);
 
-            if(p+point<=max_level_points){
+            if(pp+points<=max_level_points){
               t = knex('scores').where({user_id }).increment('points', points).transacting(trx);
               p.push(t);
             }else{
-              t = knex('scores').where({user_id }).update({ points : (p + points - max_level_points) }).transacting(trx);
+
+
+
+              t = knex('scores').where({user_id }).update({ points : (pp + points - max_level_points) }).transacting(trx);
               p.push(t);
               t = knex('scores').where({user_id }).increment('level', 1).transacting(trx);
               p.push(t);
@@ -150,24 +157,26 @@ task.redeemTask= function(req, res, next) {
               p.push(t);
             }    
 
-            t = knex('pointlog').insert({ user_id, count: points, logtext: 'Task complete....'+taskusers_id }).transacting(trx);
-            p.push(t);        
+            //t = knex('pointlog').insert({ user_id, count: points, logtext: 'Task complete....'+taskusers_id }).transacting(trx);
+            //p.push(t);        
 
-            t = knex('jewels').where({ user_id, jeweltype_id: 1 }).increment('count', coins }).transacting(trx);
+            t = knex('jewels').where({ user_id, jeweltype_id: 1 }).increment('count', coins ).transacting(trx);
             p.push(t);
 
             t = knex('jewels').where({ user_id, jeweltype_id: 1 }).increment('total_count', coins ).transacting(trx);
             p.push(t);
 
-            t = knex('coinlog').insert({ user_id, count: coins, logtext: 'Task complete....'+taskusers_id }).transacting(trx);
-            p.push(t);
+            //t = knex('coinlog').insert({ user_id, count: coins, logtext: 'Task complete....'+taskusers_id }).transacting(trx);
+            //p.push(t);
 
-            if(show_money && money>0){
-              t = knex('wallet').where({ user_id }).increment('money', money ).transacting(trx);
+            if(show_money && money>0.0){
+              console.log('<<<<<<'+money);
+              t = knex.raw('update wallet set money = money + :money where user_id = :user_id', {money, user_id}).transacting(trx);
+              //t = knex('wallet').where({ user_id }).increment('money', money ).transacting(trx);
               p.push(t);
 
-              t = knex('walletlog').insert({ user_id, money }).transacting(trx);
-              p.push(t);
+              //t = knex('walletlog').insert({ user_id, money }).transacting(trx);
+              //p.push(t);
             }  
 
             t = knex('taskusers').where({id:taskusers_id }).update({'done': true}).transacting(trx);
@@ -179,16 +188,16 @@ task.redeemTask= function(req, res, next) {
             .then( values => {
 
               for( let i=0; i<values.length; i++ ){
-                if(values[i] == 0 )
+                console.log('>>>>>>>'+values[i]);
+                if(values[i] == 0 ){                  
                   throw new Error('Transaction failed');
-              }              
+                }
+              }
+                           
 
             })
             .then(trx.commit)
-            .catch(err => {
-              trx.rollback
-              throw err;
-            });
+            .catch(trx.rollback)
 
 
 
@@ -197,26 +206,30 @@ task.redeemTask= function(req, res, next) {
 
           //check if money available
 
-          let t_id = Math.floor(Math.random() * (1000 - 10 + 1)) + 10;
-          knex('money').select()
-          .then( money => {
-              if(money[0]>10.00)
-                return knex('taskusers').insert({ user_id , task_id: t_id });
-              else{
-                knex('taskusers').insert({ user_id , task_id: t_id, show_money: false })
-                .then(()=>{})
-                .catch(()=>{})
-              }
-          })          
-          .then( val => {
-              return knex('task').where({id: t_id}).select('money');
-          })
-          .then( m => {
-              return knex('money').decrement('money', m[0]);
-          })
-          .catch( err => {
+          if(qty === null){
 
-          })
+              let t_id = Math.floor(Math.random() * (1000 - 10 + 1)) + 10;
+              knex('money').select()
+              .then( money => {
+                  if(money[0]>10.00)
+                    return knex('taskusers').insert({ user_id , task_id: t_id });
+                  else{
+                    knex('taskusers').insert({ user_id , task_id: t_id, show_money: false })
+                    .then(()=>{})
+                    .catch(()=>{})
+                  }
+              })          
+              .then( val => {
+                  return knex('task').where({id: t_id}).select('money');
+              })
+              .then( m => {
+                  return knex('money').decrement('money', m[0]);
+              })
+              .catch( err => {
+
+              })
+
+          }    
 
         return res.json({ error: false, message: 'Successfully task completed' });
       })
@@ -272,7 +285,7 @@ function complete_achievement(diamonds, a_id, user_id){
   .then( () => {
     return res.json({ error:false, percent: 100 });
   })
-  catch(err => {
+  .catch(err => {
     next(err);
   });
   
@@ -324,76 +337,76 @@ task.redeemAchievement = function(req, res, next) {
 
       case 18: return knex('users').where( 'users.reference' , req.session.user.phone )
                   .join('score', 'users.id', '=', 'score.user_id')
-                  .where( 'score.level', '>=', 5 )
+                  .andWhere( 'score.level', '>=', 5 )
                   .count('users.id as ref');
 
       case 19: return knex('users').where( 'users.reference' , req.session.user.phone )
                   .join('score', 'users.id', '=', 'score.user_id')
-                  .where( 'score.level', '>=', 10 )
+                  .andWhere( 'score.level', '>=', 10 )
                   .count('users.id as ref');
 
       case 20: return knex('users').where( 'users.reference' , req.session.user.phone )
                   .join('score', 'users.id', '=', 'score.user_id')
-                  .where( 'score.level', '>=', 15 )
+                  .andWhere( 'score.level', '>=', 15 )
                   .count('users.id as ref');
                   
       case 21: return knex('users').where( 'users.reference' , req.session.user.phone )
                   .join('score', 'users.id', '=', 'score.user_id')
-                  .where( 'score.level', '>=', 20 )
+                  .andWhere( 'score.level', '>=', 20 )
                   .count('users.id as ref');
                   
       case 22: return knex('users').where( 'users.reference' , req.session.user.phone )
                   .join('score', 'users.id', '=', 'score.user_id')
-                  .where( 'score.level', '>=', 25 )
+                  .andWhere( 'score.level', '>=', 25 )
                   .count('users.id as ref');
 
       case 23: return knex('users').where( 'users.reference' , req.session.user.phone )
                   .join('score', 'users.id', '=', 'score.user_id')
-                  .where( 'score.level', '>=', 30 )
+                  .andWhere( 'score.level', '>=', 30 )
                   .count('users.id as ref');
 
       case 24: return knex('users').where( 'users.reference' , req.session.user.phone )
                   .join('score', 'users.id', '=', 'score.user_id')
-                  .where( 'score.level', '>=', 40 )
+                  .andWhere( 'score.level', '>=', 40 )
                   .count('users.id as ref');
                   
       case 25: return knex('users').where( 'users.reference' , req.session.user.phone )
                   .join('score', 'users.id', '=', 'score.user_id')
-                  .where( 'score.level', '>=', 50 )
+                  .andWhere( 'score.level', '>=', 50 )
                   .count('users.id as ref');
                   
       case 26: return knex('users').where( 'users.reference' , req.session.user.phone )
                   .join('score', 'users.id', '=', 'score.user_id')
-                  .where( 'score.level', '>=', 60 )
+                  .andWhere( 'score.level', '>=', 60 )
                   .count('users.id as ref');
                                                                                           
       case 27: return knex('users').where( 'users.reference' , req.session.user.phone )
                   .join('score', 'users.id', '=', 'score.user_id')
-                  .where( 'score.level', '>=', 70 )
+                  .andWhere( 'score.level', '>=', 70 )
                   .count('users.id as ref');
                               
       case 28: return knex('users').where( 'users.reference' , req.session.user.phone )
                   .join('score', 'users.id', '=', 'score.user_id')
-                  .where( 'score.level', '>=', 80 )
+                  .andWhere( 'score.level', '>=', 80 )
                   .count('users.id as ref');
       case 29: return knex('users').where( 'users.reference' , req.session.user.phone )
                   .join('score', 'users.id', '=', 'score.user_id')
-                  .where( 'score.level', '>=', 90 )
+                  .andWhere( 'score.level', '>=', 90 )
                   .count('users.id as ref');
       
       case 30: return knex('users').where( 'users.reference' , req.session.user.phone )
                   .join('score', 'users.id', '=', 'score.user_id')
-                  .where( 'score.level', '>=', 100 )
+                  .andWhere( 'score.level', '>=', 100 )
                   .count('users.id as ref');
 
       case 31: return knex('users').where( 'users.reference' , req.session.user.phone )
                   .join('score', 'users.id', '=', 'score.user_id')
-                  .where( 'score.level', '>=', 110 )
+                  .andWhere( 'score.level', '>=', 110 )
                   .count('users.id as ref');
       
       case 32: return knex('users').where( 'users.reference' , req.session.user.phone )
                   .join('score', 'users.id', '=', 'score.user_id')
-                  .where( 'score.level', '>=', 120 )
+                  .andWhere( 'score.level', '>=', 120 )
                   .count('users.id as ref');                                                                                                                 
 
     }
@@ -720,25 +733,25 @@ function points(type, count){
         else if(type==7)
           return count * 4;
         else if(type==8)
-          return count * 8;
+          return count * 6;
         else if(type==9)
           return count * 4;
         else if(type==10)
-          return count * 8;
+          return count * 6;
         else if(type==11)
-          return count * 16;
-        else if(type==12)
           return count * 8;
+        else if(type==12)
+          return count * 6;
         else if(type==13)
-          return count * 16;
+          return count * 8;
         else if(type==14)
-          return count * 32;
+          return count * 10;
         else if(type==15)
-          return count * 16;
+          return count * 8;
         else if(type==16)
-          return count * 32;
+          return count * 10;
         else if(type==17)
-          return count * 64; 
+          return count * 12; 
         else if(type==0)
           return count * 100;                              
         else
@@ -833,8 +846,8 @@ task.generateTasks = function(req, res, next) {
 
           }  
 
-          if(sump>100){
-            let x =sump-100;
+          if(sump + sumc >100){
+            let x =sump + sumc -100;
             summ = Math.floor(x/25) * 0.25;
           }else
             summ = 0.00;

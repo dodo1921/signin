@@ -31,7 +31,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 3, diamond: 1, text: 'Collect <x> <img src='t3' />'
+                      id: 3, diamond: 1, text: "Collect <x> <img src='t3' />"
                    });
                    
 
@@ -40,7 +40,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 4, diamond: 1, text: 'Collect <x> <img src='t4' />'
+                      id: 4, diamond: 1, text: "Collect <x> <img src='t4' />"
                    });
                    
 
@@ -49,7 +49,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 5, diamond: 1, text: 'Collect <x> <img src='t5' />'
+                      id: 5, diamond: 1, text: "Collect <x> <img src='t5' />"
                    });
                    
 
@@ -58,7 +58,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 6, diamond: 1, text: 'Collect <x> <img src='t6' />'
+                      id: 6, diamond: 1, text: "Collect <x> <img src='t6' />"
                    });
                    
 
@@ -67,7 +67,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 7, diamond: 1, text: 'Collect <x> <img src='t7' />'
+                      id: 7, diamond: 1, text: "Collect <x> <img src='t7' />"
                    });
                    
 
@@ -76,7 +76,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 8, diamond: 1, text: 'Collect <x> <img src='t8' />'
+                      id: 8, diamond: 1, text: "Collect <x> <img src='t8' />"
                    });
                    
 
@@ -85,7 +85,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 9, diamond: 1, text: 'Collect <x> <img src='t9' />'
+                      id: 9, diamond: 1, text: "Collect <x> <img src='t9' />"
                    });
                    
 
@@ -94,7 +94,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 10, diamond: 1, text: 'Collect <x> <img src='t10' />'
+                      id: 10, diamond: 1, text: "Collect <x> <img src='t10' />"
                    });
                    
 
@@ -103,7 +103,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 11, diamond: 1, text: 'Collect <x> <img src='t11' />'
+                      id: 11, diamond: 1, text: "Collect <x> <img src='t11' />"
                    });
                    
 
@@ -112,7 +112,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 12, diamond: 1, text: 'Collect <x> <img src='t12' />'
+                      id: 12, diamond: 1, text: "Collect <x> <img src='t12' />"
                    });
                    
 
@@ -121,7 +121,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 13, diamond: 1, text: 'Collect <x> <img src='t13' />'
+                      id: 13, diamond: 1, text: "Collect <x> <img src='t13' />"
                    });
                    
 
@@ -130,7 +130,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 14, diamond: 1, text: 'Collect <x> <img src='t14' />'
+                      id: 14, diamond: 1, text: "Collect <x> <img src='t14' />"
                    });
                    
 
@@ -139,7 +139,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 15, diamond: 1, text: 'Collect <x> <img src='t15' />'
+                      id: 15, diamond: 1, text: "Collect <x> <img src='t15' />"
                    });
                    
 
@@ -148,7 +148,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 16, diamond: 1, text: 'Collect <x> <img src='t16' />'
+                      id: 16, diamond: 1, text: "Collect <x> <img src='t16' />"
                    });
                    
 
@@ -157,7 +157,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 17, diamond: 1, text: 'Collect <x> <img src='t17' />'
+                      id: 17, diamond: 1, text: "Collect <x> <img src='t17' />"
                    });
                    
 

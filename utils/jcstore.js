@@ -87,10 +87,15 @@ module.exports = function(session) {
 
                   }else{
                           let u = {};
-                          u.user = data;
-                          u.cookie = { originalMaxAge:6000000000000, expires : '2207-07-21T01:27:21.276Z' , httpOnly :false, path :"/" };
-                          u.passport = { user: data.id };
-                          callback(null, u );
+                          if(part[1] === data.scode){
+                            u.user = data;
+                            u.cookie = { originalMaxAge:6000000000000, expires : '2207-07-21T01:27:21.276Z' , httpOnly :false, path :"/" };
+                            u.passport = { user: data.id };
+                            callback(null, u );
+                          }else{
+                            let err = new Error("Session Expired");
+                            callback(err, null);
+                          }
                   }
 
               });  
