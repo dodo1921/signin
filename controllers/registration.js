@@ -26,7 +26,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 					//send sms vcode
 
-					let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});;
+					let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});					
 
 					knex('users').where({phone}).update({vcode:se})
 					.then(()=>{								
