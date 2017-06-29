@@ -17,7 +17,7 @@ exports.up = function(knex, Promise) {
       table.boolean('initialized').defaultTo(false);
       table.boolean('is_rooted').nullable();      
       table.timestamp('created_at').defaultTo(knex.fn.now());
-      table.timestamp('updated_at').defaultTo(knex.fn.now());
+      table.timestamp('updated_at').defaultTo(knex.fn.now()).onUpdate(knex.fn.now());
       table.boolean('online').defaultTo(false);
       table.string('topic').nullable();
       
@@ -88,15 +88,17 @@ exports.up = function(knex, Promise) {
       table.increments('id');
       table.integer('sender_id').unsigned().notNull(); 
       table.integer('sender_msgid').notNull();
-      table.bigInteger('sender_phone').unsigned().notNull();
+      table.bigInteger('sender_phone').unsigned().nullable();
       table.integer('receiver_id').unsigned().nullable(); 
       table.string('eventname').notNull();         
       table.string('msg', 5000).nullable(); 
-      table.string('path').nullable();     
+      table.string('path').nullable();
+      table.string('blob', 5000).nullable(); 
       table.integer('type').notNull();
-      table.integer('chat_id').nullable();
-      table.integer('jeweltype_id').unsigned().nullable();      
-      table.bigInteger('created_at').unsigned().notNull();
+      table.integer('jeweltype_id').unsigned().nullable();
+      table.integer('serverchat_id').unsigned().nullable();      
+      table.bigInteger('created_at').unsigned().notNull();      
+
       //table.index([ 'sender_id' ]);
       table.index([ 'receiver_id' ]);
       table.index([ 'receiver_id', 'created_at' ]);
@@ -115,9 +117,11 @@ exports.up = function(knex, Promise) {
       table.integer('group_id').unsigned().nullable();  
       table.string('eventname').notNull();     
       table.string('msg', 5000).nullable(); 
-      table.string('path').nullable();     
+      table.string('path').nullable();  
+      table.string('blob', 5000).nullable();    
       table.integer('type').notNull();      
-      table.integer('jeweltype_id').unsigned().nullable();      
+      table.integer('jeweltype_id').unsigned().nullable();  
+      table.integer('serverchat_id').unsigned().nullable();    
       table.bigInteger('created_at').notNull();
 
       //table.index([ 'sender_id' ]);      
@@ -127,7 +131,7 @@ exports.up = function(knex, Promise) {
       table.foreign('group_id').references('groups.id');
       table.foreign('jeweltype_id').references('jeweltype.id');
     })
-  })
+  })  
   .then(() => {
     return knex.schema.createTable('scores', function(table){
       table.increments('id');
@@ -147,7 +151,7 @@ exports.up = function(knex, Promise) {
       table.integer('jeweltype_id').unsigned().notNull();     
       table.integer('count').defaultTo(0);
       table.integer('total_count').defaultTo(0);
-      table.timestamp('updated_at').defaultTo(knex.fn.now());
+      table.timestamp('updated_at').defaultTo(knex.fn.now()).onUpdate(knex.fn.now());
 
       table.index(['user_id']);
       table.foreign('user_id').references('users.id');

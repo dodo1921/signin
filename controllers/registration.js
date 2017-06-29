@@ -85,15 +85,7 @@ registration.verifyCode= function(req, res, next) {
             let t = new Date(); 
             
             if(!user.initialized)
-            	initializeGame(user.id);
-            //initial jewels
-            //initial scores
-            //create factories
-            //create tasks
-            //create achivements
-
-
-            //console.log(JSON.stringify(req.session));
+            	initializeGame(user.id);           
             
             
             var signed = 's:' + signature.sign( user.id + '::::' + user.scode , 'ilovescotchscotchyscotchscotch');
@@ -104,7 +96,7 @@ registration.verifyCode= function(req, res, next) {
 
 					  res.setHeader('jc-cookie', header);
 
-  					return res.json({ error : false, request : 'verifyCode', created_at: t.getTime() });
+  					return res.json({ error : false, request : 'verifyCode', created_at: t.getTime(), teamjcid: 1 });
 
             //return res.json({ error : false });
              
