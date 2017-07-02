@@ -33,7 +33,7 @@ module.exports = {
       host: process.env.durl,
       user: process.env.dusername,
       password: process.env.dpassword,
-      database: 'jewelchat',
+      database: 'jc',
       charset: 'utf8'
     },
     migrations: {
