@@ -18,8 +18,8 @@ var cookie = require('cookie');
 /* GET home page. */
 router.get('/',  function(req, res, next) {
 		//console.log('OMG:::'+req.session.id);		
-		console.log('UFFFF');
-  	return res.json({ message : 'hello'});
+	console.log();
+  	return res.json({ message : 'hello:'+process.env.NODE_ENV+':'+process.env.durl+':'+process.env.dusername });
 });
 
 
