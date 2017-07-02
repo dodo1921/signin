@@ -18,7 +18,7 @@ exports.up = function(knex, Promise) {
       table.boolean('is_rooted').nullable();   
       table.boolean('jewel_block').nullable();      
       table.timestamp('created_at').defaultTo(knex.fn.now());
-      table.timestamp('updated_at').defaultTo(knex.fn.now()).onUpdate(knex.fn.now());
+      table.timestamp('updated_at').defaultTo(knex.fn.now());
       table.boolean('online').defaultTo(false);
       table.string('topic').nullable();
       table.integer('teamjc_id').unsigned().nullable();
@@ -153,7 +153,7 @@ exports.up = function(knex, Promise) {
       table.integer('jeweltype_id').unsigned().notNull();     
       table.integer('count').defaultTo(0);
       table.integer('total_count').defaultTo(0);
-      table.timestamp('updated_at').defaultTo(knex.fn.now()).onUpdate(knex.fn.now());
+      table.timestamp('updated_at').defaultTo(knex.fn.now());
 
       table.index(['user_id']);
       table.foreign('user_id').references('users.id');
