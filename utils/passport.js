@@ -11,7 +11,7 @@ module.exports = {
 	authenticate: function(req, userId, verificationCode, done){
 
 		knex('users').where({id: userId})
-		.select()
+		.select( 'id', 'scode', 'online', 'topic', 'token_google', 'is_rooted', 'jewel_block' )
 		.then( user => {
 			if(user[0].vcode === verificationCode){
 
@@ -19,9 +19,9 @@ module.exports = {
 				let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});
 				knex('users').where({id:user[0].id}).update({ active: true, scode: se })
 				.then( () => {		
-					user[0].scode = se;
-					user[0].active = 1;			
-					memcached.set( user[0].id, user[0], 300, err =>{} );									
+					user[0].scode = se;							
+					memcached.set( user[0].id, user[0], 300, err =>{} );
+					user[0].active = 1;									
 					done(null, user[0] );
 				})
 				.catch( err => {

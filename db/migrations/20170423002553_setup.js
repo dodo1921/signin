@@ -15,11 +15,13 @@ exports.up = function(knex, Promise) {
       table.string('token_apple').nullable();      
       table.boolean('active').defaultTo(false);
       table.boolean('initialized').defaultTo(false);
-      table.boolean('is_rooted').nullable();      
+      table.boolean('is_rooted').nullable();   
+      table.boolean('jewel_block').nullable();      
       table.timestamp('created_at').defaultTo(knex.fn.now());
       table.timestamp('updated_at').defaultTo(knex.fn.now()).onUpdate(knex.fn.now());
       table.boolean('online').defaultTo(false);
       table.string('topic').nullable();
+      table.integer('teamjc_id').unsigned().nullable();
       
       table.unique(['phone']);
       
