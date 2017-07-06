@@ -10,10 +10,10 @@ let groups = module.exports;
 
 groups.getGroups= function(req, res, next) {
 
-		knex('groupmembers').where({ user_id: req.user.id }).join('groups', 'groups.id', '=', 'groupmembers.group_id')
-		.select('groups.id', 'groups.name', 'groups.status', 'groups.small', 'groups.large')
+		knex('groupmembers').where({ user_id: req.session.user.id }).join('groups', 'groups.id', '=', 'groupmembers.group_id')
+		.select('groups.id as id', 'groups.name as name', 'groups.status as status', 'groups.small as pic')
 		.then(groups => {
-			res.json({error: false, groups })
+			return res.json({error: false, groups })
 		})
 		.catch(err => {
 			next(err);

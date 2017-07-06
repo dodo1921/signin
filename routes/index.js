@@ -39,7 +39,8 @@ router.post('/addPic', passportUtils.isAuthenticated, jccookie.cookie , controll
 router.post('/updateProfilePic', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.updateProfilePic);
 router.post('/updateProfileStatus', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.updateProfileStatus);
 
-router.post('/getGroups', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.getGroups);
+router.get('/getGroups', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.getGroups);
+router.get('/getBlockedUsers', passportUtils.isAuthenticated, jccookie.cookie , controller.registration.getBlockedUsers);
 
 router.post('/createGroups', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.createGroups);
 router.post('/addNewMembers', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.addNewMembers);

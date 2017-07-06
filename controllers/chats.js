@@ -21,7 +21,7 @@ chats.getAllGroupChatMessages = function(req, res, next) {
 							if(groupchats.length>=20)
 								res.json({error: false, groupchats, pageno: (page + 1) })
 							else 
-								res.json({error: false, groupchats})
+								res.json({error: false, groupchats, pageno: -1, created_at: new Date().getTime() })
 					})
 					.catch(err => {
 						next(err);
@@ -49,7 +49,7 @@ chats.getAllChatMessages = function(req, res, next) {
 				if( chats.length>=20 )
 					return res.json({ error: false, chats, pageno: (page + 1) });
 				else 
-					return res.json({ error: false, chats, pageno: -1 });
+					return res.json({ error: false, chats, pageno: -1, created_at: new Date().getTime() });
 
 		})
 		.catch(err => {

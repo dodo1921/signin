@@ -90,15 +90,16 @@ exports.up = function(knex, Promise) {
       table.increments('id');
       table.integer('sender_id').unsigned().notNull(); 
       table.integer('sender_msgid').notNull();
+      table.integer('name').nullable(); 
       table.bigInteger('sender_phone').unsigned().nullable();
       table.integer('receiver_id').unsigned().nullable(); 
       table.string('eventname').notNull();         
       table.string('msg', 5000).nullable(); 
       table.string('path').nullable();
       table.string('blob', 5000).nullable(); 
-      table.integer('type').notNull();
+      table.integer('type').nullable();
       table.integer('jeweltype_id').unsigned().nullable();
-      table.integer('serverchat_id').unsigned().nullable();      
+      table.integer('chat_id').unsigned().nullable();      
       table.bigInteger('created_at').unsigned().notNull();      
 
       //table.index([ 'sender_id' ]);
@@ -115,15 +116,16 @@ exports.up = function(knex, Promise) {
       table.increments('id');
       table.integer('sender_id').unsigned().notNull();
       table.integer('sender_msgid').notNull(); 
-      table.bigInteger('sender_phone').unsigned().notNull();       
+      table.integer('name').nullable(); 
+      table.bigInteger('sender_phone').unsigned().nullable();       
       table.integer('group_id').unsigned().nullable();  
       table.string('eventname').notNull();     
       table.string('msg', 5000).nullable(); 
       table.string('path').nullable();  
       table.string('blob', 5000).nullable();    
-      table.integer('type').notNull();      
+      table.integer('type').nullable();      
       table.integer('jeweltype_id').unsigned().nullable();  
-      table.integer('serverchat_id').unsigned().nullable();    
+      table.integer('chat_id').unsigned().nullable();    
       table.bigInteger('created_at').notNull();
 
       //table.index([ 'sender_id' ]);      

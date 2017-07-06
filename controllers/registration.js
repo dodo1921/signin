@@ -240,6 +240,20 @@ registration.inviteUser= function(req, res, next) {
 
 };
 
+registration.getBlockedUsers = function(req, res, next){		
+
+				knex('blocked').where({ user_id: req.session.user.id }).join('users', 'users.id', '=', 'blocked.user_id')
+				.select('users.id as id', 'users.name as name', 'users.status as status', 'users.pic as pic')
+				.then(users => {
+					return res.json({error: false, users })
+				})
+				.catch(err => {
+					next(err);
+				});		
+
+};
+
+
 registration.updateGcmToken= function(req, res, next) {
   
 		let token = req.body.token;
