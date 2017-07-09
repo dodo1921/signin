@@ -43,7 +43,7 @@ module.exports = function(userid) {
         })
         .then(()=>{
             return knex('wallet').insert({
-              user_id: userid, money: 0.00               
+              user_id: userid             
             }).transacting(trx);
         })
         .then(()=>{

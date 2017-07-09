@@ -11,6 +11,7 @@ module.exports = {
       directory: __dirname + '/db/seeds/test'
     }
   },
+  /*
   development: {
     client: 'mysql',
     connection: {
@@ -27,7 +28,7 @@ module.exports = {
       directory: __dirname + '/db/seeds/development'
     }
   },
-  /*
+  */  
   development: {
     client: 'mysql',
     connection: {
@@ -43,7 +44,7 @@ module.exports = {
     seeds: {
       directory: __dirname + '/db/seeds/development'
     }
-  },*/
+  },
   production: {
     client: 'mysql',
     connection: {

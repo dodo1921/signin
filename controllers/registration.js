@@ -52,7 +52,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 					//insert new user
 					let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});
-					knex.returning('id').table('users').insert({ phone, vcode:se, name: 'defaultJCUname' })
+					knex.returning('id').table('users').insert({ phone, vcode:se, name: 'defaultJCUname', teamjc_id: 1 })
 					.then(id => {								
 										
 										return res.json({ error: false, userId: id[0], active: false });
@@ -95,8 +95,35 @@ registration.verifyCode= function(req, res, next) {
 					  var header = Array.isArray(prev) ? prev.concat(data) : [prev, data];		
 
 					  res.setHeader('jc-cookie', header);
+					  
+					  knex.transaction( trx => {
 
-  					return res.json({ error : false, request : 'verifyCode', created_at: t.getTime(), teamjcid: 1 });
+					  		let d = new Date();
+					  		let msgid = parseInt(''+d.getYear()+d.getMonth()+d.getDate()+d.getHours()+d.getMinutes());
+
+								knex('chats').insert({ sender_id: user.teamjc_id, sender_msgid: msgid, receiver_id: user.id, sender_phone: 919005835708,
+									eventname: 'new_msg', msg: 'Welcome to JewelChat', type:1, jeweltype_id:3, created_at: t.getTime()+1 }).transacting(trx)
+								.then( () => {
+
+									return knex('chats').insert({ sender_id: user.teamjc_id, sender_msgid: msgid+1, receiver_id: user.id, sender_phone: 919005835708,
+									eventname: 'new_msg', msg: 'Collect jewels from each message', type:1, jeweltype_id:6, created_at: t.getTime()+5 }).transacting(trx);
+
+								})
+								.then( () => {
+
+									return knex('chats').insert({ sender_id: user.teamjc_id, sender_msgid: msgid+2, receiver_id: user.id, sender_phone: 919005835708,
+									eventname: 'new_msg', msg: 'Fulfill tasks to win points, coins and CASH', type:1, jeweltype_id:9, created_at: t.getTime()+10 }).transacting(trx);
+
+								})																
+								.then(trx.commit)
+		        		.catch(trx.rollback);
+
+						})   
+						.then( values => {})
+					  .catch( err => {});
+
+						
+  					return res.json({ error : false, request : 'verifyCode', created_at: t.getTime(), teamjcid: user.teamjc_id });
 
             //return res.json({ error : false });
              
@@ -243,7 +270,7 @@ registration.inviteUser= function(req, res, next) {
 registration.getBlockedUsers = function(req, res, next){		
 
 				knex('blocked').where({ user_id: req.session.user.id }).join('users', 'users.id', '=', 'blocked.user_id')
-				.select('users.id as id', 'users.name as name', 'users.status as status', 'users.pic as pic')
+				.select('users.id as id', 'users.phone as phone', 'users.name as name', 'users.status as status', 'users.pic as pic')
 				.then(users => {
 					return res.json({error: false, users })
 				})
@@ -259,7 +286,7 @@ registration.updateGcmToken= function(req, res, next) {
 		let token = req.body.token;
 		  	
 
-		knex('users').where({id: req.user.id}).update({ token_google:token })
+		knex('users').where({id: req.session.user.id}).update({ token_google:token })
 		.then(()=>{
 			res.json({ error: false });
 		})

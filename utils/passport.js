@@ -11,7 +11,7 @@ module.exports = {
 	authenticate: function(req, userId, verificationCode, done){
 
 		knex('users').where({id: userId})
-		.select( 'id', 'scode', 'online', 'topic', 'token_google', 'is_rooted', 'jewel_block' )
+		.select( 'id', 'vcode', 'scode', 'online', 'topic', 'token_google', 'is_rooted', 'jewel_block', 'initialized', 'teamjc_id' )
 		.then( user => {
 			if(user[0].vcode === verificationCode){
 
@@ -21,11 +21,12 @@ module.exports = {
 				.then( () => {		
 					user[0].scode = se;							
 					memcached.set( user[0].id, user[0], 300, err =>{} );
-					user[0].active = 1;									
-					done(null, user[0] );
+					user[0].active = 1;		
+					console.log('>>>>>>>>>>>>>>>>>');							
+					done( null, user[0] );
 				})
 				.catch( err => {
-					done( err , null);
+					done( err , null );
 				})
 				
 			}

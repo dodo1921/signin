@@ -7,10 +7,10 @@ let Promise = require('bluebird');
 chats.getAllGroupChatMessages = function(req, res, next) {
   
 	
-		let lastgroupchatid	 = req.body.lastgroupchatid;
+		let lastgroupchatid	 = req.body.created_at;
 		let page = req.body.page;
 
-		knex('groupmembers').where({ user_id: req.user.id })
+		knex('groupmembers').where({ user_id: req.session.user.id })
 		.select('groupmembers.group_id')
 		.then(groups => {		
 					
