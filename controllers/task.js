@@ -253,7 +253,8 @@ task.getAchievements= function(req, res, next) {
   	.join('achievements', 'achievementusers.achievement_id', '=', 'achievements.id')
   	//.join('taskdetails', 'taskusers.task_id', '=', 'taskdetails.task_id' )
   	.orderBy('achievementusers.level', 'asc')
-  	.select()
+  	.select('achievementusers.level as level', 'achievements.id as aid', 'achievements.diamonds as diamonds',
+      'achievements.text as text', 'achievements.note as note', 'achievementusers.id as id' )
   	.limit(8).offset(req.body.page * 8)
   	.then(achievements => {
   		
