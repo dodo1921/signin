@@ -14,16 +14,16 @@ task.getTasks = function(req, res, next) {
   let subquery1 = knex('taskusers')
                  .where({ user_id: req.session.user.id , done : false })
                  .orderBy('taskusers.id', 'desc')
-                 .select('task_id')
+                 .select('id')
                  .limit(5).offset(req.body.page * 5);
 
   let subquery =  knex.raw('select * from ( '+subquery1+' ) temp_tab');                 
   
-	knex('taskusers').whereIn('taskusers.task_id', subquery)
+	knex('taskusers').whereIn('taskusers.id', subquery)
 	.join('tasks', 'taskusers.task_id', '=', 'tasks.id')
 	.join('taskdetails', 'taskusers.task_id', '=', 'taskdetails.task_id' )   	
 	.select( 'taskusers.id as id', 'tasks.id as task_id', 'tasks.duration as duration', 'tasks.coins as coins', 'tasks.points as points'
-    , 'tasks.money as money', 'tasks.qty as qty', 'tasks.level as level', 'tasks.created_at as created_at'
+    , 'taskusers.show_money as show_money' ,'tasks.money as money', 'tasks.qty as qty', 'tasks.level as level', 'tasks.created_at as created_at'
     , 'taskdetails.jeweltype_id as jeweltype_id', 'taskdetails.count as count', 'taskusers.done as done' )
   .orderBy('taskusers.id', 'desc')       	
 	.then(tasks => {  		
@@ -118,7 +118,7 @@ task.redeemTask= function(req, res, next) {
 
           for(let j=0; j<details.length; j++){
             t = knex('jewels').where({ user_id, jeweltype_id: details[j].jeweltype_id })
-            .andWhere('count', '>', details[j].count )
+            .andWhere('count', '>=', details[j].count )
             .decrement('count', details[j].count).transacting(trx);
 
             p.push(t);
@@ -300,13 +300,20 @@ task.redeemAchievement = function(req, res, next) {
   let a_id = req.body.id;
   let user_id = req.session.user.id;
 
-  let level, id;
+  let level, id, phone;
 
   knex('achievementusers').where({ id: a_id }).select()
   .then( achi => {
 
     id = achi[0].achievement_id;
     level = achi[0].level;
+
+    return knex('users').where({ id: req.session.user.id }).select(); 
+
+  })
+  .then( user => {
+
+    phone = user[0].phone;    
 
     return knex('scores').where({ user_id }).select(); 
 
@@ -337,76 +344,76 @@ task.redeemAchievement = function(req, res, next) {
       case 16: return knex('jewels').where({user_id, jeweltype_id: 16}).select('total_count');
       case 17: return knex('jewels').where({user_id, jeweltype_id: 17}).select('total_count');
 
-      case 18: return knex('users').where( 'users.reference' , req.session.user.phone )
+      case 18: return knex('users').where( 'users.reference' , phone )
                   .join('scores', 'users.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 5 )
                   .count('users.id as ref');
 
-      case 19: return knex('users').where( 'users.reference' , req.session.user.phone )
+      case 19: return knex('users').where( 'users.reference' , phone )
                   .join('scores', 'users.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 10 )
                   .count('users.id as ref');
 
-      case 20: return knex('users').where( 'users.reference' , req.session.user.phone )
+      case 20: return knex('users').where( 'users.reference' , phone )
                   .join('scores', 'users.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 15 )
                   .count('users.id as ref');
                   
-      case 21: return knex('users').where( 'users.reference' , req.session.user.phone )
+      case 21: return knex('users').where( 'users.reference' , phone )
                   .join('scores', 'users.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 20 )
                   .count('users.id as ref');
                   
-      case 22: return knex('users').where( 'users.reference' , req.session.user.phone )
+      case 22: return knex('users').where( 'users.reference' , phone )
                   .join('scores', 'users.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 25 )
                   .count('users.id as ref');
 
-      case 23: return knex('users').where( 'users.reference' , req.session.user.phone )
+      case 23: return knex('users').where( 'users.reference' , phone )
                   .join('scores', 'users.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 30 )
                   .count('users.id as ref');
 
-      case 24: return knex('users').where( 'users.reference' , req.session.user.phone )
+      case 24: return knex('users').where( 'users.reference' , phone )
                   .join('scores', 'users.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 40 )
                   .count('users.id as ref');
                   
-      case 25: return knex('users').where( 'users.reference' , req.session.user.phone )
+      case 25: return knex('users').where( 'users.reference' , phone )
                   .join('scores', 'users.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 50 )
                   .count('users.id as ref');
                   
-      case 26: return knex('users').where( 'users.reference' , req.session.user.phone )
+      case 26: return knex('users').where( 'users.reference' , phone )
                   .join('scores', 'users.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 60 )
                   .count('users.id as ref');
                                                                                           
-      case 27: return knex('users').where( 'users.reference' , req.session.user.phone )
+      case 27: return knex('users').where( 'users.reference' , phone )
                   .join('scores', 'users.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 70 )
                   .count('users.id as ref');
                               
-      case 28: return knex('users').where( 'users.reference' , req.session.user.phone )
+      case 28: return knex('users').where( 'users.reference' , phone )
                   .join('scores', 'users.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 80 )
                   .count('users.id as ref');
-      case 29: return knex('users').where( 'users.reference' , req.session.user.phone )
+      case 29: return knex('users').where( 'users.reference' , phone )
                   .join('scores', 'users.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 90 )
                   .count('users.id as ref');
       
-      case 30: return knex('users').where( 'users.reference' , req.session.user.phone )
+      case 30: return knex('users').where( 'users.reference' , phone )
                   .join('scores', 'users.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 100 )
                   .count('users.id as ref');
 
-      case 31: return knex('users').where( 'users.reference' , req.session.user.phone )
+      case 31: return knex('users').where( 'users.reference' , phone )
                   .join('scores', 'users.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 110 )
                   .count('users.id as ref');
       
-      case 32: return knex('users').where( 'users.reference' , req.session.user.phone )
+      case 32: return knex('users').where( 'users.reference' , phone )
                   .join('scores', 'users.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 120 )
                   .count('users.id as ref');                                                                                                                 
