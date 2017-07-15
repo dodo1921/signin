@@ -161,18 +161,18 @@ game.getFactories = function(req, res, next) {
 
   let subquery1 = knex('factoryuser')
                  .where({ user_id: req.session.user.id})
-                 .orderBy('factoryuser.id', 'asc')
-                 .select('factory_id')
+                 .orderBy('factory_id', 'asc')
+                 .select('id')
                  .limit(5).offset(req.body.page * 5);
 
   let subquery =  knex.raw('select * from ( '+subquery1+' ) temp_tab');              
   
-  knex('factoryuser').whereIn('factoryuser.factory_id', subquery)
+  knex('factoryuser').whereIn('factoryuser.id', subquery)
   .join('factory', 'factoryuser.factory_id', '=', 'factory.id')
   .join('factorymaterial', 'factoryuser.factory_id', '=', 'factorymaterial.factory_id' )    
-  .select('factory.id as id', 'factory.jeweltype_id as factory_type', 'factory.level as level'
+  .select('factory.id as id', 'factory.jeweltype_id as factory_type', 'factory.level as level', 'factory.count as amount'
     , 'factory.duration as duration', 'factoryuser.start_time as start_time', 'factoryuser.is_on as is_on'
-    , 'factorymaterial.jeweltype_id as jeweltype_id', 'factorymaterial.count as count')      
+    , 'factorymaterial.jeweltype_id as jeweltype_id', 'factorymaterial.count as count', 'factory.diamond as diamond')      
   .then(fac => {      
       return res.json({error: false ,fac , time: new Date() });        
   })

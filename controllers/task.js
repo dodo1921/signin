@@ -25,7 +25,7 @@ task.getTasks = function(req, res, next) {
 	.select( 'taskusers.id as id', 'tasks.id as task_id', 'tasks.duration as duration', 'tasks.coins as coins', 'tasks.points as points'
     , 'taskusers.show_money as show_money' ,'tasks.money as money', 'tasks.qty as qty', 'tasks.level as level', 'tasks.created_at as created_at'
     , 'taskdetails.jeweltype_id as jeweltype_id', 'taskdetails.count as count', 'taskusers.done as done' )
-  .orderBy('taskusers.id', 'desc')       	
+  .orderBy('tasks.money', 'desc')       	
 	.then(tasks => {  		
 			return res.json({error: false, tasks, time: new Date() });  			
 	})
