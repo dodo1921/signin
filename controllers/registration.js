@@ -95,32 +95,37 @@ registration.verifyCode= function(req, res, next) {
 					  var header = Array.isArray(prev) ? prev.concat(data) : [prev, data];		
 
 					  res.setHeader('jc-cookie', header);
+
+					  if(user.id !== user.teamjc_id){
 					  
-					  knex.transaction( trx => {
+						  knex.transaction( trx => {
 
-					  		let d = new Date();
-					  		let msgid = parseInt(''+d.getYear()+d.getMonth()+d.getDate()+d.getHours()+d.getMinutes());
+						  		let d = new Date();
+						  		let msgid = parseInt(''+d.getYear()+d.getMonth()+d.getDate()+d.getHours()+d.getMinutes());
 
-								knex('chats').insert({ sender_id: user.teamjc_id, sender_msgid: msgid, receiver_id: user.id, sender_phone: 919005835708,
-									eventname: 'new_msg', msg: 'Welcome to JewelChat', type:1, jeweltype_id:3, created_at: t.getTime()+1 }).transacting(trx)
-								.then( () => {
+									knex('chats').insert({ sender_id: user.teamjc_id, sender_msgid: msgid, receiver_id: user.id, sender_phone: 919005835708,
+										eventname: 'new_msg', msg: 'Welcome to JewelChat', type:1, jeweltype_id:3, created_at: t.getTime()+1 }).transacting(trx)
+									.then( () => {
 
-									return knex('chats').insert({ sender_id: user.teamjc_id, sender_msgid: msgid+1, receiver_id: user.id, sender_phone: 919005835708,
-									eventname: 'new_msg', msg: 'Collect jewels from each message', type:1, jeweltype_id:6, created_at: t.getTime()+5 }).transacting(trx);
+										return knex('chats').insert({ sender_id: user.teamjc_id, sender_msgid: msgid+1, receiver_id: user.id, sender_phone: 919005835708,
+										eventname: 'new_msg', msg: 'Collect jewels from each message', type:1, jeweltype_id:6, created_at: t.getTime()+5 }).transacting(trx);
 
-								})
-								.then( () => {
+									})
+									.then( () => {
 
-									return knex('chats').insert({ sender_id: user.teamjc_id, sender_msgid: msgid+2, receiver_id: user.id, sender_phone: 919005835708,
-									eventname: 'new_msg', msg: 'Fulfill tasks to win points, coins and CASH', type:1, jeweltype_id:9, created_at: t.getTime()+10 }).transacting(trx);
+										return knex('chats').insert({ sender_id: user.teamjc_id, sender_msgid: msgid+2, receiver_id: user.id, sender_phone: 919005835708,
+										eventname: 'new_msg', msg: 'Fulfill tasks to win points, coins and CASH', type:1, jeweltype_id:9, created_at: t.getTime()+10 }).transacting(trx);
 
-								})																
-								.then(trx.commit)
-		        		.catch(trx.rollback);
+									})																
+									.then(trx.commit)
+			        		.catch(trx.rollback);
 
-						})   
-						.then( values => {})
-					  .catch( err => {});
+							})   
+							.then( values => {})
+						  .catch( err => {});
+
+						
+						}  
 
 						
   					return res.json({ error : false, request : 'verifyCode', created_at: t.getTime(), teamjcid: user.teamjc_id });

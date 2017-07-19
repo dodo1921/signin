@@ -38,6 +38,8 @@ router.get('/getUserProfile', passportUtils.isAuthenticated, jccookie.cookie , c
 router.post('/addPic', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.addPic);
 router.post('/updateProfilePic', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.updateProfilePic);
 router.post('/updateProfileStatus', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.updateProfileStatus);
+router.post('/downloadContact', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.downloadContact);
+
 
 router.get('/getGroups', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.getGroups);
 router.get('/getBlockedUsers', passportUtils.isAuthenticated, jccookie.cookie , controller.registration.getBlockedUsers);

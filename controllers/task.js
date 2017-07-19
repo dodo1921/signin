@@ -211,7 +211,8 @@ task.redeemTask= function(req, res, next) {
               let t_id = Math.floor(Math.random() * (1000 - 10 + 1)) + 10;
               knex('money').select()
               .then( money => {
-                  if(money[0]>10.00)
+                  console.log('Money>>>>>>>>'+money[0].money);
+                  if(money[0].money>10.00)
                     return knex('taskusers').insert({ user_id , task_id: t_id });
                   else{
                     knex('taskusers').insert({ user_id , task_id: t_id, show_money: false })
@@ -220,13 +221,15 @@ task.redeemTask= function(req, res, next) {
                   }
               })          
               .then( val => {
-                  return knex('task').where({id: t_id}).select('money');
+                  return knex('tasks').where({id: t_id}).select('money');
               })
               .then( m => {
-                  return knex('money').decrement('money', m[0]);
+                  console.log('Money<<<<<<'+m[0].money);
+                  let x = m[0].money;
+                  return knex.raw('update `money` set money = money - :x', {x});
               })
               .catch( err => {
-
+                  console.log('ERROR ERROR '+err);
               })
 
           }    
@@ -252,7 +255,7 @@ task.getAchievements= function(req, res, next) {
 	knex('achievementusers').where({ user_id: req.session.user.id })
   	.join('achievements', 'achievementusers.achievement_id', '=', 'achievements.id')
   	//.join('taskdetails', 'taskusers.task_id', '=', 'taskdetails.task_id' )
-  	.orderBy('achievementusers.level', 'asc')
+  	//.orderBy('achievementusers.level', 'asc')
     .orderBy('achievements.id', 'asc')
   	.select('achievementusers.level as level', 'achievements.id as aid', 'achievements.diamond as diamond',
       'achievements.text as text', 'achievements.note as note', 'achievementusers.id as id' )
@@ -830,14 +833,14 @@ task.generateTasks = function(req, res, next) {
               t = Math.floor(Math.random() * (jj.length - 1 + 1)) + 1;
               flag=false;
               for(let j=0; j<jt.length; j++){
-                if(jt[j] == t){
+                if(jt[j] == jj[t-1]){
                     flag=true;
                     break;
                   }
 
               }
 
-              jt.push(t);
+              jt.push(jj[t-1]);
 
             }
 
@@ -863,7 +866,7 @@ task.generateTasks = function(req, res, next) {
 
           
 
-
+        /*    
           
           knex.transaction( trx => {      
 
@@ -892,6 +895,37 @@ task.generateTasks = function(req, res, next) {
           .catch( err => {
             
           });
+
+        */
+
+        knex.transaction( trx => {      
+
+                knex('tasks').where({ id: (k+1) }).update({ points: sump, coins:sumc, money:summ }).transacting(trx)
+                .then( (id) =>{
+
+                   let a = []; let t;
+
+                   for(let i=0; i<materials.length; i++){
+                      //console.log( '>>>>'+id+'::::::'+materials[i][0]+'::::::::'+materials[i][1]);
+                      t = knex.table('taskdetails').insert({task_id: (k+1), jeweltype_id: materials[i][0], count: materials[i][1] }).transacting(trx);
+                      a.push(t);
+                      
+                   } 
+
+                   return Promise.all(a);
+                    
+                })        
+                .then(trx.commit)
+                .catch(trx.rollback);
+
+          })
+          .then( values => {
+            
+          })
+          .catch( err => {
+            
+          });
+
 
   }        
 

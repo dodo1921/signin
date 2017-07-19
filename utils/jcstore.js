@@ -63,7 +63,7 @@ module.exports = function(session) {
                   if(err || data===undefined){
 
                           this.client('users').where({ id: parts[0], scode: parts[1] })
-                          .select( 'id', 'scode', 'online', 'topic', 'token_google', 'is_rooted', 'jewel_block' )
+                          .select( 'id', 'vcode', 'scode', 'online', 'topic', 'token_google', 'is_rooted', 'jewel_block', 'initialized', 'teamjc_id', 'active')
                           .then( user => {
                             if(user.length>0){
                               memcached.set( user[0].id, user[0], 900, err=>{});

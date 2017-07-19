@@ -23,6 +23,23 @@ contacts.getRegisteredContacts= function(req, res, next) {
 
 };
 
+
+contacts.downloadContact= function(req, res, next) {
+  
+	  
+	  knex('users')
+	  .whereIn( 'id', req.body.id )
+	  .select( 'id', 'pic', 'name', 'phone', 'status' )
+	  .then(users => {
+	  	return res.json({ error:false, contact: users[0] });
+	  })
+	  .catch(err => {
+	  	next(err);
+	  });
+	
+
+};
+
 contacts.getProfile= function(req, res, next) {
 
 		Promise.all([

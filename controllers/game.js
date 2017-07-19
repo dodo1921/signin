@@ -10,42 +10,34 @@ function innerpickjewel( req, res, next, jewel ,msg_id, jeweltype){
 
     if(jewel[0].jeweltype_id === jeweltype ){
 
+          console.log("Here>>>>>>>>>>><<<<<<");
+
           knex('jewels')
           .where({ user_id : req.session.user.id })
-          .andWhereNotIn('jeweltype_id', [ 0, 1, 2 ])
-          .sum('count')
+          .whereNotIn('jeweltype_id', [ 0, 1, 2 ])
+          .sum('count as c')
           .then( count => {
+              console.log("Here>>>>>>>>>>>"+count[0].c);
+             if( count[0].c < 25  ){
 
-             if( count[0] < 25  ){
+
 
                           knex.transaction( trx => {
 
                               let p = []; let t;
 
-                              t = knex('jewel').where({user_id: req.session.user.id, jeweltype_id: jeweltype })
+                              t = knex('jewels').where({user_id: req.session.user.id, jeweltype_id: jeweltype })
                                                 .increment('count', 1).transacting(trx);
                               p.push(t); 
                               
-                              t = knex('jewel').where({user_id: req.session.user.id, jeweltype_id: jeweltype })
+                              t = knex('jewels').where({user_id: req.session.user.id, jeweltype_id: jeweltype })
                                                 .increment('total_count', 1).transacting(trx);
                               p.push(t);                           
 
                               
-                              Promise.all(p)
-                              .then( values => {
-
-                                for( let i=0; i<values.length; i++ ){
-                                  console.log('>>>>>>>'+values[i]);
-                                  if(values[i] == 0 )
-                                    throw new Error('Transaction failed');
-                                }              
-
-                              })
+                              Promise.all(p)                              
                               .then(trx.commit)
-                              .catch(err => {
-                                trx.rollback
-                                throw err;
-                              });
+                              .catch(trx.rollback);
 
                           })   
                           .then( values => {
@@ -61,11 +53,9 @@ function innerpickjewel( req, res, next, jewel ,msg_id, jeweltype){
                 throw new Error('Jewel Store is full')
              } 
 
-          })
-          .then( () => {
-            res.json({error: false})
-          })
-          .catch( err => {
+          })          
+          .catch( err => {    
+            console.log("Here>>>>>>>>>>>Error"+err);
             next(err)
           })
 
@@ -92,7 +82,7 @@ game.pickJewel = function(req, res, next) {
             //check total count less than 25
             //  update or insert jeweltype count
 
-            knex('groupchats').where({ id : msg_id }).select('jeweltype')
+            knex('groupchats').where({ id : msg_id }).select('jeweltype_id')
             .then(jewel => {
                 innerpickjewel(req, res, next, jewel, msg_id, jeweltype);
             })
@@ -102,7 +92,7 @@ game.pickJewel = function(req, res, next) {
 
       }else{
 
-            knex('chats').where({ id : msg_id }).select('jeweltype')
+            knex('chats').where({ id : msg_id }).select('jeweltype_id')
             .then(jewel => {
                 innerpickjewel(req, res, next, jewel, msg_id, jeweltype);
             })
@@ -328,15 +318,19 @@ game.stopFactory = function(req, res, next) {
       if(jewelstore[i].jeweltype_id == 0)
         diamond_u_have = jewelstore[i].count;
 
-      if(jewelstore[i].jeweltype_id >=2)
+      if(jewelstore[i].jeweltype_id > 2)
         jewelstore_count += jewelstore[i].count;
 
     }
 
     if(jewelstore_count+produce_count>25)
       throw new Error('Not enough Space');
-    st.setSeconds(st.getSeconds + duration) 
-    if( st > current_time )
+    console.log('Start time:::'+st);
+    st.setSeconds(st.getSeconds() + duration); 
+    console.log('Start time plus duration :::'+st);
+    console.log('Current time :::'+current_time);
+
+    if( st < current_time )
       diamond_deduction_flag = false;
     else{
       diamond_deduction_flag = true;
@@ -401,6 +395,7 @@ game.stopFactory = function(req, res, next) {
 
   })
   .catch(err=>{
+    console.log('Error::::'+err);
     next(err);
   })
   

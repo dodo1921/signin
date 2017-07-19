@@ -90,7 +90,7 @@ exports.up = function(knex, Promise) {
       table.increments('id');
       table.integer('sender_id').unsigned().notNull(); 
       table.integer('sender_msgid').notNull();
-      table.integer('name').nullable(); 
+      table.string('name').nullable(); 
       table.bigInteger('sender_phone').unsigned().nullable();
       table.integer('receiver_id').unsigned().nullable(); 
       table.string('eventname').notNull();         
@@ -116,7 +116,7 @@ exports.up = function(knex, Promise) {
       table.increments('id');
       table.integer('sender_id').unsigned().notNull();
       table.integer('sender_msgid').notNull(); 
-      table.integer('name').nullable(); 
+      table.string('name').nullable(); 
       table.bigInteger('sender_phone').unsigned().nullable();       
       table.integer('group_id').unsigned().nullable();  
       table.string('eventname').notNull();     
