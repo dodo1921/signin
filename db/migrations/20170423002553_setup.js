@@ -10,6 +10,7 @@ exports.up = function(knex, Promise) {
       table.string('name').nullable();
       table.string('status', 1000).nullable();
       table.string('pic').nullable();
+      table.string('large_pic').nullable();
       table.bigInteger('reference').unsigned().nullable();      
       table.string('token_google').nullable();
       table.string('token_apple').nullable();      
@@ -35,6 +36,9 @@ exports.up = function(knex, Promise) {
       table.integer('user_id').unsigned().notNull();      
       table.bigInteger('invitee').unsigned().notNull();
       table.index(['invitee']);  
+
+      table.unique([ 'user_id', 'invitee' ]);
+
     })
   })
   .then(() => {
@@ -47,17 +51,6 @@ exports.up = function(knex, Promise) {
       table.foreign('user_id').references('users.id');
     })
   })  
-  .then(() => {
-    return knex.schema.createTable('pic', function(table){
-      table.increments('id');
-      table.integer('user_id').unsigned().notNull();      
-      table.string('small').nullable();
-      table.string('large').nullable();
-      table.boolean('is_profile').defaultTo(false);
-      table.index(['user_id']);
-      table.foreign('user_id').references('users.id');
-    })
-  })
   .then(() => {
     return knex.schema.createTable('jeweltype', function(table){
       table.integer('id').unsigned().notNull().primary();
@@ -169,8 +162,7 @@ exports.up = function(knex, Promise) {
       table.timestamp('duration').nullable();
       table.integer('coins').nullable();
       table.integer('points').notNull();
-      table.decimal('money', [5], [2] ).defaultTo(0.00).nullable();
-      table.integer('level').defaultTo(0);
+      table.decimal('money', [5], [2] ).defaultTo(0.00).nullable();      
       table.integer('qty').nullable();
       table.timestamp('created_at').defaultTo(knex.fn.now());       
     })
@@ -180,8 +172,7 @@ exports.up = function(knex, Promise) {
       table.increments('id');
       table.integer('task_id').unsigned().notNull();
       table.integer('jeweltype_id').unsigned().notNull();
-      table.integer('count').notNull();
-
+      table.integer('count').notNull();      
       table.index(['task_id']);
       table.foreign('task_id').references('tasks.id');
       table.foreign('jeweltype_id').references('jeweltype.id');       
@@ -193,8 +184,8 @@ exports.up = function(knex, Promise) {
       table.integer('task_id').unsigned().notNull();
       table.integer('user_id').unsigned().notNull();
       table.boolean('show_money').defaultTo(true);
+      table.integer('level').defaultTo(0);
       table.boolean('done').defaultTo(false);
-
       table.index(['user_id']);
       table.index(['task_id']);
       table.foreign('task_id').references('tasks.id');
@@ -381,7 +372,6 @@ exports.down = function(knex, Promise) {
     knex.schema.dropTableIfExists('users'),
     knex.schema.dropTableIfExists('invite'),
     knex.schema.dropTableIfExists('blocked'),    
-    knex.schema.dropTableIfExists('pics'),
     knex.schema.dropTableIfExists('groups'),
     knex.schema.dropTableIfExists('groupmembers'),
     knex.schema.dropTableIfExists('chats'),

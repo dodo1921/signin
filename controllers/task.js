@@ -866,7 +866,7 @@ task.generateTasks = function(req, res, next) {
 
           
 
-        /*    
+         
           
           knex.transaction( trx => {      
 
@@ -896,8 +896,8 @@ task.generateTasks = function(req, res, next) {
             
           });
 
-        */
-
+        
+        /*
         knex.transaction( trx => {      
 
                 knex('tasks').where({ id: (k+1) }).update({ points: sump, coins:sumc, money:summ }).transacting(trx)
@@ -925,6 +925,8 @@ task.generateTasks = function(req, res, next) {
           .catch( err => {
             
           });
+
+          */
 
 
   }        

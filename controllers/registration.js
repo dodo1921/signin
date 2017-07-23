@@ -33,11 +33,11 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 								if( user[0].active ){		
 										
-										return res.json({ error: false, userId: user[0].id, active: true });
+										return res.json({ error: false, userId: user[0].id, active: true, name: user[0].name });
 
 								}else{
 										
-										return res.json({ error: false, userId: user[0].id, active: false });
+										return res.json({ error: false, userId: user[0].id, active: false, name: user[0].name });
 								}
 
 
@@ -268,9 +268,106 @@ registration.resendVcode= function(req, res, next) {
 };
 
 registration.inviteUser= function(req, res, next) { 
+
+
+	knex('users').where({phone: req.body.phone, active:true }).select()
+	.then(user=>{
+
+			if(user.length>0)
+				return res.json({error:false, invite:1, is_regis: true, contact: user[0]})
+			else{
+
+					knex('invite')	  
+				  .insert({ user_id: req.session.user.id, invitee: req.body.phone  })
+				  .then( val => {
+
+				  		// send Invite 	SMS 
+				  		return res.json({error: false, invite: 1, is_regis:false });
+				  })
+				  .catch(err=>{
+				  	next(err);
+				  });
+
+			}
+
+	})
+	.catch(err=>{
+  	next(err);
+  });
 	
 
 };
+
+
+registration.getLeaderboard = function(req, res, next) {
+
+	knex('scores').where({user_id: req.session.user.id}).select()
+	.then(scores => {
+
+			if(scores.length<=0)
+				throw new Error('Illegal Operation');	
+
+			let t1 = knex('scores').where({level:scores[0].level+1}).andWhere('points','>',0)
+								.join('users','scores.user_id', '=', 'users.id')
+								.orderBy('scores.points', 'desc')
+								.select('users.id as id', 'users.pic as pic', 'users.name as name', 'scores.level as level', 'scores.points as points')
+								.limit(5);
+			p.push(t1);					
+
+			let t2 = knex('scores').where({level:scores[0].level}).andWhere('points','>',scores[0].points)
+								.join('users','scores.user_id', '=', 'users.id')
+								.orderBy('scores.points', 'desc')
+								.select('users.id as id', 'users.pic as pic', 'users.name as name', 'scores.level as level', 'scores.points as points')
+								.limit(5);
+			p.push(t2);									
+
+			let t3 = knex('scores').where({level:scores[0].level}).andWhere('points','<',scores[0].points)
+								.join('users','scores.user_id', '=', 'users.id')
+								.orderBy('scores.points', 'desc')
+								.select('users.id as id', 'users.pic as pic', 'users.name as name', 'scores.level as level', 'scores.points as points')
+								.limit(10);
+			p.push(t3);							
+
+			let t4 = knex('scores').where({level:scores[0].level-1})
+								.join('users','scores.user_id', '=', 'users.id')
+								.orderBy('scores.points', 'desc')
+								.select('users.id as id', 'users.pic as pic', 'users.name as name', 'scores.level as level', 'scores.points as points')
+								.limit(10);					
+
+			p.push(t4);						
+
+			let p = [];
+
+
+			Promise.all(p)
+      .then( values => {
+
+      	if(values.length>3){
+      		if(values[2].length == 0 && values[3].length == 0)
+      			return res.json({ error:false, top1:[], top2: [], top3: [], top4: [] }); 
+      		else
+      			return res.json({ error:false, top1: values[0], top2: values[1], top3: values[2], top4: values[3]});
+      	}
+      	else{
+      		if(values[2].length == 0 && values[3].length == 0)
+      			return res.json({ error:false, top1:[], top2: [], top3: [], top4: [] }); 
+      		else	      
+          	return res.json({ error:false, top1: values[0], top2: values[1], top3: values[2], top4: []);           
+        }  	
+      })      
+      .catch(err=>{
+      	next(err);
+      });
+
+
+
+	})
+	.catch(err=>{
+		next(err);
+	})
+
+};
+
 
 registration.getBlockedUsers = function(req, res, next){		
 
@@ -307,9 +404,9 @@ registration.getChildren= function(req, res, next) {
 	  knex('users')
 	  .where({reference: req.user.phone })
 	  .join('scores', 'users.id', '=', 'scores.user_id')
-	  .select('users.id', 'users.name', 'scores.level')
+	  .select('users.id as id', 'users.name as name', 'users.pic pic','scores.level', 'scores.points as points')
 		.then( users =>{
-			res.json({ children: users });
+			return res.json({ error: false, children: users });
 		})
 		.catch(err=>{
 			next(err);

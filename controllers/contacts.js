@@ -28,10 +28,31 @@ contacts.downloadContact= function(req, res, next) {
   
 	  
 	  knex('users')
-	  .whereIn( 'id', req.body.id )
+	  .where( 'id', req.body.id )
 	  .select( 'id', 'pic', 'name', 'phone', 'status' )
 	  .then(users => {
 	  	return res.json({ error:false, contact: users[0] });
+	  })
+	  .catch(err => {
+	  	next(err);
+	  });
+	
+
+};
+
+contacts.downloadContact_Phone= function(req, res, next) {
+  
+	  
+	  knex('users')
+	  .where( 'phone', req.body.phone )
+	  .select( 'id', 'pic', 'name', 'phone', 'status' )
+	  .then(users => {
+	  	if(users.length>0)
+	  		return res.json({ error:false, contact: users[0] });
+	  	else{
+	  		let c = {};
+	  		return res.json({ error:false});
+	  	}
 	  })
 	  .catch(err => {
 	  	next(err);

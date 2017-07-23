@@ -30,7 +30,7 @@ router.post('/resendVcode', controller.registration.resendVcode);
 router.post('/inviteUser', passportUtils.isAuthenticated, jccookie.cookie ,controller.registration.inviteUser);
 router.post('/updateGcmToken', passportUtils.isAuthenticated, jccookie.cookie ,controller.registration.updateGcmToken);
 router.get('/getChildren',passportUtils.isAuthenticated, jccookie.cookie , controller.registration.getChildren);
-
+router.get('/getLeaderboard',passportUtils.isAuthenticated, jccookie.cookie , controller.registration.getLeaderboard);
 
 router.get('/getRegisteredContacts',passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.getRegisteredContacts);
 router.get('/getProfile',passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.getProfile);
@@ -39,7 +39,7 @@ router.post('/addPic', passportUtils.isAuthenticated, jccookie.cookie , controll
 router.post('/updateProfilePic', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.updateProfilePic);
 router.post('/updateProfileStatus', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.updateProfileStatus);
 router.post('/downloadContact', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.downloadContact);
-
+router.post('/downloadContact_Phone', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.downloadContact_Phone);
 
 router.get('/getGroups', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.getGroups);
 router.get('/getBlockedUsers', passportUtils.isAuthenticated, jccookie.cookie , controller.registration.getBlockedUsers);
@@ -71,7 +71,7 @@ router.post('/getMyShop', passportUtils.isAuthenticated, jccookie.cookie , contr
 router.post('/addToShop', passportUtils.isAuthenticated, jccookie.cookie , controller.game.addToShop);
 router.post('/getUserShop', passportUtils.isAuthenticated, jccookie.cookie , controller.game.getUserShop);
 
-router.post('/getWallet', passportUtils.isAuthenticated, jccookie.cookie , controller.wallet.getWallet );
+router.get('/getWallet', passportUtils.isAuthenticated, jccookie.cookie , controller.wallet.getWallet );
 router.post('/redeemMoney', passportUtils.isAuthenticated, jccookie.cookie , controller.wallet.redeemMoney);
 router.post('/buyDiamonds', passportUtils.isAuthenticated, jccookie.cookie , controller.wallet.buyDiamonds);
 router.post('/buyCoins', passportUtils.isAuthenticated, jccookie.cookie , controller.wallet.buyCoins);
