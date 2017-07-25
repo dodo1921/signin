@@ -30,7 +30,7 @@ wallet.getWallet = function(req, res, next) {
 		if( entry.length > 0 )
 			return res.json({error:false, value: m, flag: diff>1?true:false });
 		else
-			return res.json({error:false, value: 0.00: diff>1?true:false });
+			return res.json({error:false, value: 0.00, flag: diff>1?true:false });
 
 	})
 	.catch(err=>{		
@@ -172,7 +172,7 @@ wallet.buyCoins = function(req, res, next) {
 
 			knex.transaction( trx => {
 
-							knex('walletlog').insert({ user_id: req.session.user.id, money: -m, tag:'Coin buy '+ m }).transacting(trx);
+							knex('walletlog').insert({ user_id: req.session.user.id, money: -m, tag:'Coin buy '+ m }).transacting(trx)
 							.then( () => {
 
 								return knex('wallet').where({ user_id: req.session.user.id }).decrement( 'money', m ).transacting(trx);

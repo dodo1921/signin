@@ -31,6 +31,7 @@ router.post('/inviteUser', passportUtils.isAuthenticated, jccookie.cookie ,contr
 router.post('/updateGcmToken', passportUtils.isAuthenticated, jccookie.cookie ,controller.registration.updateGcmToken);
 router.get('/getChildren',passportUtils.isAuthenticated, jccookie.cookie , controller.registration.getChildren);
 router.get('/getLeaderboard',passportUtils.isAuthenticated, jccookie.cookie , controller.registration.getLeaderboard);
+router.get('/getCustomTokenFirebase', passportUtils.isAuthenticated, jccookie.cookie , controller.registration.getCustomTokenFirebase);
 
 router.get('/getRegisteredContacts',passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.getRegisteredContacts);
 router.get('/getProfile',passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.getProfile);
@@ -77,6 +78,8 @@ router.post('/buyDiamonds', passportUtils.isAuthenticated, jccookie.cookie , con
 router.post('/buyCoins', passportUtils.isAuthenticated, jccookie.cookie , controller.wallet.buyCoins);
 
 router.get('/generateTasks', controller.task.generateTasks);
+
+
 
 
 

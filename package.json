@@ -20,6 +20,7 @@
     "speakeasy": "*",
     "request": "*",
     "bluebird": "*",
-    "memcached": "*"
+    "memcached": "*",
+    "firebase-admin": "*"
   }
 }

@@ -11,6 +11,10 @@ let cookie = require('cookie');
 
 let initializeGame = require('../utils/initializeGame');
 
+let game = require('./game');
+
+let admin = require('firebase-admin');
+
 
 let registration = module.exports;
 
@@ -33,11 +37,11 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 								if( user[0].active ){		
 										
-										return res.json({ error: false, userId: user[0].id, active: true, name: user[0].name });
+										return res.json({ error: false, userId: user[0].id, active: true, name: user[0].name, status_msg: user[0].status , app_version : game.app_version });
 
 								}else{
 										
-										return res.json({ error: false, userId: user[0].id, active: false, name: user[0].name });
+										return res.json({ error: false, userId: user[0].id, active: false, name: user[0].name, status_msg: user[0].status, app_version : game.app_version });
 								}
 
 
@@ -52,10 +56,10 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 					//insert new user
 					let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});
-					knex.returning('id').table('users').insert({ phone, vcode:se, name: 'defaultJCUname', teamjc_id: 1 })
+					knex.returning('id').table('users').insert({ phone, vcode:se, name: 'defaultJCUname', status: 'Keep collecting...', teamjc_id: 1 })
 					.then(id => {								
 										
-										return res.json({ error: false, userId: id[0], active: false });
+										return res.json({ error: false, userId: id[0], active: false, name: 'defaultJCUname', status_msg: 'Keep collecting...', app_version : game.app_version });
 						
 					})
 					.catch( err => {
@@ -167,70 +171,84 @@ registration.initialDetails= function(req, res, next) {
 					knex('users').where({ phone: req.body.reference, initialized: true }).select('id')
 					.then( user=>{
 							if(user.length>0){
-								upd.reference = req.body.reference;	ref_id = user[0];						
+								upd.reference = req.body.reference;	ref_id = user[0].id;
+
+									if(upd.reference && ref_id ){
+
+											knex.transaction( trx => {
+
+													knex('users').where({ id: req.session.user.id }).update(upd).transacting(trx)
+													.then( () => {
+
+														return knex('jewels').where({ user_id: ref_id, jeweltype_id: 2 }).increment('count', 1).transacting(trx);
+
+													})
+													.then( () => {
+
+														return knex('jewels').where({ user_id: ref_id, jeweltype_id: 2 }).increment('total_count', 1).transacting(trx);
+
+													})
+													.then( () => {
+
+														return knex('jewels').where({ user_id: req.session.user.id, jeweltype_id: 0 }).increment('total_count', 2).transacting(trx);
+
+													})
+													.then( () => {
+
+														return knex('jewels').where({ user_id: req.session.user.id, jeweltype_id: 0 }).increment('count', 2).transacting(trx);
+
+													})
+													.then( () => {
+
+														return knex('diamondlog').insert({ user_id: req.session.user.id, count : 2, logtext: 'Reference Number entry'}).transacting(trx);
+
+													})
+													.then(trx.commit)
+							        		.catch(trx.rollback);
+
+											})   
+											.then( values => {
+							    				return res.json({ error: false, name: req.body.name });
+										  })
+										  .catch( err => {
+										    next(err);
+										  });
+
+
+									}else{
+
+											knex('users').where({ id: req.session.user.id }).update(upd)
+											.then(()=>{
+													return res.json({ error: false, name: req.body.name });
+											})
+											.catch( err =>{
+												next(err);
+											});	
+
+									}	
+
+
+							}else{
+
+											knex('users').where({ id: req.session.user.id }).update(upd)
+											.then(()=>{
+													return res.json({ error: false, name: req.body.name });
+											})
+											.catch( err =>{
+												next(err);
+											});	
+
 							}
 								
 					})
 					.catch( err =>{
-						
+						next(err);
 					});
 
 			}
 		}
 
-		if(upd.reference && ref_id ){
-
-				knex.transaction( trx => {
-
-						knex('users').where({ id: req.session.user.id }).update(upd).transacting(trx)
-						.then( () => {
-
-							return knex('jewels').where({ user_id: ref_id, jeweltype_id: 2 }).increment('count', 1).transacting(trx);
-
-						})
-						.then( () => {
-
-							return knex('jewels').where({ user_id: ref_id, jeweltype_id: 2 }).increment('total_count', 1).transacting(trx)
-
-						})
-						.then( () => {
-
-							return knex('jewels').where({ user_id: req.session.user.id, jeweltype_id: 0 }).increment('total_count', 2).transacting(trx)
-
-						})
-						.then( () => {
-
-							return knex('jewels').where({ user_id: req.session.user.id, jeweltype_id: 0 }).increment('count', 2).transacting(trx)
-
-						})
-						.then( () => {
-
-							return knex('diamondlog').insert({ user_id: req.session.user.id, count : 2, logtext: 'Reference Number entry'}).transacting(trx)
-
-						})
-						.then(trx.commit)
-        		.catch(trx.rollback);
-
-				})   
-				.then( values => {
-    				return res.json({ error: false, name: req.body.name });
-			  })
-			  .catch( err => {
-			    next(err);
-			  });
-
-
-		}else{
-
-				knex('users').where({ id: req.session.user.id }).update(upd)
-				.then(()=>{
-						return res.json({ error: false, name: req.body.name });
-				})
-				.catch( err =>{
-					next(err);
-				});	
-
-		}	
+		
 
 };
 
@@ -352,7 +370,7 @@ registration.getLeaderboard = function(req, res, next) {
       		if(values[2].length == 0 && values[3].length == 0)
       			return res.json({ error:false, top1:[], top2: [], top3: [], top4: [] }); 
       		else	      
-          	return res.json({ error:false, top1: values[0], top2: values[1], top3: values[2], top4: []);           
+          	return res.json({ error:false, top1: values[0], top2: values[1], top3: values[2], top4: []});           
         }  	
       })      
       .catch(err=>{
@@ -395,6 +413,19 @@ registration.updateGcmToken= function(req, res, next) {
 		.catch( err => {
 			next(err);
 		});
+
+
+};
+
+registration.getCustomTokenFirebase = function(req, res, next) {		
+
+		admin.auth().createCustomToken(req.session.user.id+'')
+	  .then(function(customToken) {
+	    return res.json({error: false, customToken })
+	  })
+	  .catch(err => {
+	    next(err)
+	  });
 
 
 };

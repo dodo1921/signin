@@ -8,6 +8,7 @@ var controllers = module.exports = {
   chats :  require('./chats'),
   game :  require('./game'),
   task :  require('./task'),
-  wallet :  require('./wallet')
+  wallet :  require('./wallet'),
+  firebase :  require('./firebase')
     	
 };

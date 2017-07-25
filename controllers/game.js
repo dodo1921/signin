@@ -4,6 +4,8 @@ let game = module.exports;
 let knex = require('../db/knex');
 let Promise = require('bluebird');
 
+game.app_version = 1.0;
+
 
 
 function innerpickjewel( req, res, next, jewel ,msg_id, jeweltype){
@@ -139,7 +141,7 @@ game.getGameState = function(req, res, next) {
 	  	knex('jewels').where({ user_id: req.session.user.id }).select()
 	  ])	
 		.then((values)=>{
-			return res.json({ error: false, scores: values[0], jewels: values[1] });
+			return res.json({ error: false, scores: values[0], jewels: values[1], app_version: game.app_version });
 		})
 		.catch( err => {
 			next(err);

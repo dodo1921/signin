@@ -15,6 +15,14 @@ var routes = require('./routes/index');
 
 var jcstore = require('./utils/jcstore')(session);
 
+let admin = require('firebase-admin');
+
+let serviceAccount = require("./jewelchat-bfcb0-firebase-adminsdk-7yts9-ab89b3250c.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://jewelchat-bfcb0.firebaseio.com"
+});
 
 var app = express();
 app.disable('x-powered-by');
