@@ -106,13 +106,9 @@ contacts.addPic= function(req, res, next) {
 
 };
 
-contacts.updateProfilePic= function(req, res, next) {
-  
-  Promise.all([
-  	knex('users').where({id: req.user.id}).update({ pic:req.body.pic }),
-  	knex('pic').where({id: req.body.pic_id_old}).update({ is_profile: false}),
-  	knex('pic').where({id: req.body.pic_id_new}).update({ is_profile: true}),
-  ])	
+contacts.updateProfilePic = function(req, res, next) {  
+  	
+  	knex('users').where({id: req.session.user.id}).update({ pic:req.body.pic })
 	.then((values)=>{
 		res.json({ error: false });
 	})
@@ -122,9 +118,22 @@ contacts.updateProfilePic= function(req, res, next) {
 
 };
 
-contacts.updateProfileStatus= function(req, res, next) {
+contacts.updateProfileStatus = function(req, res, next) {
   
-	knex('users').where({id: req.user.id}).update({ status:req.body.status })
+	knex('users').where({ id: req.session.user.id }).update({ status: req.body.status })
+	.then(()=>{
+		res.json({ error: false });
+	})
+	.catch( err => {
+		next(err);
+	});
+
+};
+
+
+contacts.updateProfileName = function(req, res, next) {
+  
+	knex('users').where({ id: req.session.user.id }).update({ name: req.body.name })
 	.then(()=>{
 		res.json({ error: false });
 	})

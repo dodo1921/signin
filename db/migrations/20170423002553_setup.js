@@ -9,7 +9,7 @@ exports.up = function(knex, Promise) {
       table.string('scode').nullable();      
       table.string('name').nullable();
       table.string('status', 1000).nullable();
-      table.string('pic').nullable();
+      table.text('pic', [longtext] ).nullable();
       table.string('large_pic').nullable();
       table.bigInteger('reference').unsigned().nullable();      
       table.string('token_google').nullable();

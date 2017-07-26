@@ -13,24 +13,33 @@ wallet.getWallet = function(req, res, next) {
 	knex('wallet').where({user_id: req.session.user.id}).select()
 	.then(entry => {
 		
-		m = entry[0].money;
-		return knex('walletlog').where({user_id: req.session.user.id, tag:'redeem' }).max('created_at');		
+		m = entry;
+
+		return knex('walletlog').where({user_id: req.session.user.id, tag:'redeem' }).max('created_at as a');		
 
 	})
 	.then( val => {
 
-		console.log('Last redeem time:::'+val[0].created_at);
+		let diff;
 
-		let last_redeem_time = new Date(val[0].created_at);
-		let now = new Date();
+		if(val[0].a !== null){
+			console.log('Last redeem time:::'+val[0].a+':::'+val.length);
 
-		let diff = (last_redeem_time.getTime() - now.getTime())/(86400000); 
+			let last_redeem_time = new Date(val[0].a);
+			let now = new Date();
 
+			diff = (last_redeem_time.getTime() - now.getTime())/(86400000); 
+		}
+		else{
+			diff = 2;
+		}		
 
-		if( entry.length > 0 )
-			return res.json({error:false, value: m, flag: diff>1?true:false });
+		console.log('Diff:'+(diff>1));
+
+		if( m.length > 0 )
+			return res.json({error:false, value: m[0].money, flag: (diff>1) });
 		else
-			return res.json({error:false, value: 0.00, flag: diff>1?true:false });
+			return res.json({error:false, value: 0.00, flag: (diff>1) });
 
 	})
 	.catch(err=>{		

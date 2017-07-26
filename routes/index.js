@@ -39,6 +39,7 @@ router.get('/getUserProfile', passportUtils.isAuthenticated, jccookie.cookie , c
 router.post('/addPic', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.addPic);
 router.post('/updateProfilePic', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.updateProfilePic);
 router.post('/updateProfileStatus', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.updateProfileStatus);
+router.post('/updateProfileName', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.updateProfileName);
 router.post('/downloadContact', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.downloadContact);
 router.post('/downloadContact_Phone', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.downloadContact_Phone);
 
