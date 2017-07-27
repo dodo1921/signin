@@ -52,6 +52,7 @@ router.post('/leaveGroup', passportUtils.isAuthenticated, jccookie.cookie , cont
 
 router.post('/getAllGroupChatMessages', passportUtils.isAuthenticated, jccookie.cookie , controller.chats.getAllGroupChatMessages );
 router.post('/getAllChatMessages', passportUtils.isAuthenticated, jccookie.cookie , controller.chats.getAllChatMessages );
+router.post('/delivery', passportUtils.isAuthenticated, jccookie.cookie , controller.chats.delivery );
 
 router.post('/getTasks', passportUtils.isAuthenticated, jccookie.cookie , controller.task.getTasks);
 router.post('/getTaskElements', passportUtils.isAuthenticated, jccookie.cookie , controller.task.getTaskElements)

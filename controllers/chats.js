@@ -4,6 +4,24 @@ let chats = module.exports;
 let knex = require('../db/knex');
 let Promise = require('bluebird');
 
+
+chats.delivery = function(req, res, next) {
+  
+	
+		let data	 = req.body.data;
+		data.created_at = new Date().getTime();
+          // insert in chat table
+
+    knex.returning('id').table('chats').insert(data)
+    .then( id => {      
+      res.json({ error: false, eventname: 'delivery_ack', sender_msgid: data.sender_msgid,  delivered: data.created_at });
+    })
+    .catch( err =>{
+      next(err);
+    });
+
+};
+
 chats.getAllGroupChatMessages = function(req, res, next) {
   
 	

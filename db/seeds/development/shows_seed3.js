@@ -14,7 +14,7 @@ exports.seed = function(knex, Promise) {
   .then(()=>{
       return knex('users').insert({
         id: 1,
-        phone: 919005835708,
+        phone: 910000000000,
         name: 'Team JewelChat',
         status: 'Keep collecting...'        
       });

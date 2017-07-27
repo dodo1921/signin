@@ -94,7 +94,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 10, diamond: 1, text: "Collect <x> <img src='t10' />"
+                      id: 10, diamond: 2, text: "Collect <x> <img src='t10' />"
                    });
                    
 
@@ -103,7 +103,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 11, diamond: 1, text: "Collect <x> <img src='t11' />"
+                      id: 11, diamond: 2, text: "Collect <x> <img src='t11' />"
                    });
                    
 
@@ -121,7 +121,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 13, diamond: 1, text: "Collect <x> <img src='t13' />"
+                      id: 13, diamond: 2, text: "Collect <x> <img src='t13' />"
                    });
                    
 
@@ -130,7 +130,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 14, diamond: 1, text: "Collect <x> <img src='t14' />"
+                      id: 14, diamond: 2, text: "Collect <x> <img src='t14' />"
                    });
                    
 
@@ -139,7 +139,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 15, diamond: 1, text: "Collect <x> <img src='t15' />"
+                      id: 15, diamond: 2, text: "Collect <x> <img src='t15' />"
                    });
                    
 
@@ -148,7 +148,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 16, diamond: 1, text: "Collect <x> <img src='t16' />"
+                      id: 16, diamond: 3, text: "Collect <x> <img src='t16' />"
                    });
                    
 
@@ -166,7 +166,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 18, diamond: 1, text: '<x> referred users reached level 5.'
+                      id: 18, diamond: 3, text: '<x> referred users reached level 5.'
                    });
                    
 
@@ -175,7 +175,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 19, diamond: 1, text: '<x> referred users reached level 10.'
+                      id: 19, diamond: 3, text: '<x> referred users reached level 10.'
                    });
                    
 
@@ -184,7 +184,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 20, diamond: 1, text: '<x> referred users reached level 15.'
+                      id: 20, diamond: 3, text: '<x> referred users reached level 15.'
                    });
                    
 
@@ -193,7 +193,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 21, diamond: 1, text: '<x> referred users reached level 20.'
+                      id: 21, diamond: 3, text: '<x> referred users reached level 20.'
                    });
                    
 
@@ -202,7 +202,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 22, diamond: 1, text: '<x> referred users reached level 25.'
+                      id: 22, diamond: 3, text: '<x> referred users reached level 25.'
                    });
                    
 
@@ -211,7 +211,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 23, diamond: 1, text: '<x> referred users reached level 30.'
+                      id: 23, diamond: 3, text: '<x> referred users reached level 30.'
                    });
                    
 
@@ -220,7 +220,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 24, diamond: 1, text: '<x> referred users reached level 40.'
+                      id: 24, diamond: 3, text: '<x> referred users reached level 40.'
                    });
                    
 
@@ -229,7 +229,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 25, diamond: 1, text: '<x> referred users reached level 50.'
+                      id: 25, diamond: 3, text: '<x> referred users reached level 50.'
                    });
                    
 
@@ -238,7 +238,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 26, diamond: 1, text: '<x> referred users reached level 60.'
+                      id: 26, diamond: 3, text: '<x> referred users reached level 60.'
                    });
                    
 
@@ -247,7 +247,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 27, diamond: 1, text: '<x> referred users reached level 70.'
+                      id: 27, diamond: 3, text: '<x> referred users reached level 70.'
                    });
                    
 
@@ -256,7 +256,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 28, diamond: 1, text: '<x> referred users reached level 80.'
+                      id: 28, diamond: 3, text: '<x> referred users reached level 80.'
                    });
                    
 
@@ -265,7 +265,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 29, diamond: 1, text: '<x> referred users reached level 90.'
+                      id: 29, diamond: 3, text: '<x> referred users reached level 90.'
                    });
                    
 
@@ -274,7 +274,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 30, diamond: 1, text: '<x> referred users reached level 100.'
+                      id: 30, diamond: 3, text: '<x> referred users reached level 100.'
                    });
                    
 
@@ -283,7 +283,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 31, diamond: 1, text: '<x> referred users reached level 110.'
+                      id: 31, diamond: 3, text: '<x> referred users reached level 110.'
                    });
                    
 
@@ -292,7 +292,7 @@ exports.seed = function(knex, Promise) {
 
         return knex.table('achievements')                   
                    .insert({
-                      id: 32, diamond: 1, text: '<x> referred users reached level 120.'
+                      id: 32, diamond: 3, text: '<x> referred users reached level 120.'
                    });
                    
 

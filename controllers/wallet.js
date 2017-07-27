@@ -28,7 +28,8 @@ wallet.getWallet = function(req, res, next) {
 			let last_redeem_time = new Date(val[0].a);
 			let now = new Date();
 
-			diff = (last_redeem_time.getTime() - now.getTime())/(86400000); 
+			diff = (now.getTime()-last_redeem_time.getTime() )/(86400000); 
+			console.log(diff);
 		}
 		else{
 			diff = 2;
