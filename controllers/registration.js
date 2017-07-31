@@ -15,8 +15,16 @@ let game = require('./game');
 
 let admin = require('firebase-admin');
 
+let config = require('../utils/config');
 
 let registration = module.exports;
+
+
+let teamjc_list = [
+	{ id:1, phone: 910000000000 },
+	{ id:2, phone: 910000000001 },
+	{ id:3, phone: 910000000002 }
+];
 
 
 registration.registerPhoneNumber = function(req, res, next) {
@@ -56,7 +64,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 					//insert new user
 					let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});
-					knex.returning('id').table('users').insert({ phone, vcode:se, name: 'defaultJCUname', status: 'Keep collecting...', teamjc_id: 1 })
+					knex.returning('id').table('users').insert({ phone, vcode:se, name: 'defaultJCUname', status: 'Keep collecting...', teamjc_id: teamjc_list[0].id, teamjc_phone: teamjc_list[0].phone })
 					.then(id => {								
 										
 										return res.json({ error: false, userId: id[0], active: false, name: 'defaultJCUname', status_msg: 'Keep collecting...', app_version : game.app_version });
@@ -92,7 +100,7 @@ registration.verifyCode= function(req, res, next) {
             	initializeGame(user.id);           
             
             
-            var signed = 's:' + signature.sign( user.id + '::::' + user.scode , 'ilovescotchscotchyscotchscotch');
+            var signed = 's:' + signature.sign( user.id + '::::' + user.scode , config.secret);
 					  var data = cookie.serialize('connect.sid', signed, {});  
 
 					  var prev = res.getHeader('jc-cookie') || [];
@@ -107,18 +115,19 @@ registration.verifyCode= function(req, res, next) {
 						  		let d = new Date();
 						  		let msgid = parseInt(''+d.getYear()+d.getMonth()+d.getDate()+d.getHours()+d.getMinutes());
 
-									knex('chats').insert({ sender_id: user.teamjc_id, sender_msgid: msgid, receiver_id: user.id, sender_phone: 919005835708,
-										eventname: 'new_msg', msg: 'Welcome to JewelChat', type:1, jeweltype_id:3, created_at: t.getTime()+1 }).transacting(trx)
+
+									knex('chats').insert({ sender_id: user.teamjc_id, sender_msgid: msgid+1, receiver_id: user.id, sender_phone: user.teamjc_phone, name: 'Team JewelChat',
+										eventname: 'new_msg', msg: 'Collect jewels from each message', type:1, jeweltype_id:3, created_at: t.getTime()+1 }).transacting(trx)									
 									.then( () => {
 
-										return knex('chats').insert({ sender_id: user.teamjc_id, sender_msgid: msgid+1, receiver_id: user.id, sender_phone: 919005835708,
-										eventname: 'new_msg', msg: 'Collect jewels from each message', type:1, jeweltype_id:6, created_at: t.getTime()+5 }).transacting(trx);
+										return knex('chats').insert({ sender_id: user.teamjc_id, sender_msgid: msgid+2, receiver_id: user.id, sender_phone: user.teamjc_phone, name: 'Team JewelChat',
+										eventname: 'new_msg', msg: 'Fulfill tasks to win points, coins and CASH', type:1, jeweltype_id:6, created_at: t.getTime()+5 }).transacting(trx);
 
 									})
 									.then( () => {
 
-										return knex('chats').insert({ sender_id: user.teamjc_id, sender_msgid: msgid+2, receiver_id: user.id, sender_phone: 919005835708,
-										eventname: 'new_msg', msg: 'Fulfill tasks to win points, coins and CASH', type:1, jeweltype_id:9, created_at: t.getTime()+10 }).transacting(trx);
+										return knex('chats').insert({ sender_id: user.teamjc_id, sender_msgid: msgid, receiver_id: user.id, sender_phone: user.teamjc_phone, name: 'Team JewelChat',
+										eventname: 'new_msg', msg: 'Welcome to JewelChat', type:1, jeweltype_id:9, created_at: t.getTime()+10 }).transacting(trx);
 
 									})																
 									.then(trx.commit)
@@ -132,7 +141,7 @@ registration.verifyCode= function(req, res, next) {
 						}  
 
 						
-  					return res.json({ error : false, request : 'verifyCode', created_at: t.getTime(), teamjcid: user.teamjc_id });
+  					return res.json({ error : false, request : 'verifyCode', created_at: t.getTime(), teamjcid: user.teamjc_id, teamjcphone: user.teamjc_phone });
 
             //return res.json({ error : false });
              
@@ -165,7 +174,10 @@ registration.initialDetails= function(req, res, next) {
 
 		let upd = {}; let ref_id;
 		upd.name = req.body.name;
+
+
 		if(req.body.reference){
+
 			if(req.session.user.phone !== parseInt(req.body.reference)){
 					
 					knex('users').where({ phone: req.body.reference, initialized: true }).select('id')
@@ -245,7 +257,23 @@ registration.initialDetails= function(req, res, next) {
 						next(err);
 					});
 
+			}else{
+
+				return res.json({error:true});
+
 			}
+
+
+		}else{
+
+				knex('users').where({ id: req.session.user.id }).update(upd)
+				.then(()=>{
+						return res.json({ error: false, name: req.body.name });
+				})
+				.catch( err =>{
+					next(err);
+				});	
+
 		}
 
 		

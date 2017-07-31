@@ -3,8 +3,7 @@
 let knex = require('../db/knex');
 let Promise = require('bluebird');
 
-let level_max = [55, 164, 194, 142, 76, 80, 172, 289, 346, 313, 241, 220,290, 410, 491, 481, 411, 367, 412, 526, 627, 643, 583, 523, 541, 642, 
-756, 799, 755, 685, 677, 759, 879, 947, 942, 853, 820, 879, 997, 1088, 1090 ];
+let level_max = [55,289,346,313,241,220,290,410,491,481,411,367,412,526,627,643,583,523,541,642,756,799,755,685,677,759,879,947,924,853,820,879,997,1088,1090,1024,972,1004,1113,1221,1250,1196,1131,1136,1229,1347,1402,1367,1296,1276,1347,1467,1547,1535,1465,1423,1470,1584,1684,1698,1637,1578,1598,1700,1813,1855,1809,1740,1733,1817,1936,2003,1979,1907,1876,1937,2055,2144,2145,2078,2027,2061,2171,2278,2305,2250,2186,2193,2287,2404,2458,2421,2350,2332,2405,2525,2603,2590,2519,2478,2527,2642,2740,2753,2691,2633,2655,2758,2870,2910,2863,2795,2789,2874,2994,3059,3033,2962,2932,2994,3112,3201,3200,3132,3082,3118,3229,3334,3360,3304,3240,3249,3345,3461,3514,3476,3405,3388,3462,3582,3659,3644,3574,3534,3584,3700,3797,3808,3745,3688,3711,3816,3927,3965,3917,3849,3846,3932,4051,4115,4088,4016,3988,4051,4170,4257,4254,4186,4138,4175,4287,4391,4415,4359,4295,4306,4402,4518,4569,4530,4459,4444,4520,4640,4715,4699,4628,4590,4641,4757,4853,4863,4800,4743,4768,4873,4984,5021,4972,4904,4902];
 
 let task = module.exports;
 
@@ -23,7 +22,7 @@ task.getTasks = function(req, res, next) {
 	.join('tasks', 'taskusers.task_id', '=', 'tasks.id')
 	.join('taskdetails', 'taskusers.task_id', '=', 'taskdetails.task_id' )   	
 	.select( 'taskusers.id as id', 'tasks.id as task_id', 'tasks.duration as duration', 'tasks.coins as coins', 'tasks.points as points'
-    , 'taskusers.show_money as show_money' ,'tasks.money as money', 'tasks.qty as qty', 'tasks.level as level', 'tasks.created_at as created_at'
+    , 'taskusers.show_money as show_money' ,'tasks.money as money', 'tasks.qty as qty', 'taskusers.level as level', 'tasks.created_at as created_at'
     , 'taskdetails.jeweltype_id as jeweltype_id', 'taskdetails.count as count', 'taskusers.done as done' )
   .orderBy('tasks.money', 'desc')       	
 	.then(tasks => {  		
@@ -147,8 +146,6 @@ task.redeemTask= function(req, res, next) {
               p.push(t);
             }else{
 
-
-
               t = knex('scores').where({user_id }).update({ points : (pp + points - max_level_points) }).transacting(trx);
               p.push(t);
               t = knex('scores').where({user_id }).increment('level', 1).transacting(trx);
@@ -208,7 +205,17 @@ task.redeemTask= function(req, res, next) {
 
           if(qty === null){
 
-              let t_id = Math.floor(Math.random() * (1000 - 10 + 1)) + 10;
+              let t_id;
+
+              if(score_level<7)
+                t_id = Math.floor(Math.random() * (2000 - 10 + 1)) + 10;
+              else if(score_level>=7 && score_level<17)
+                t_id = Math.floor(Math.random() * (3000 - 10 + 1)) + 10;
+              else if(score_level>=17 && score_level<27)
+                t_id = Math.floor(Math.random() * (4000 - 10 + 1)) + 10;
+              else if(score_level>=27 )  
+                t_id = Math.floor(Math.random() * (5000 - 10 + 1)) + 10;
+
               knex('money').select()
               .then( money => {
                   console.log('Money>>>>>>>>'+money[0].money);
@@ -815,7 +822,28 @@ task.generateTasks = function(req, res, next) {
 
   for(let k=0; k<5000; k++){
 
-          let jj = []; jj = [3,6,9,12,15,3,6,9,12,15,3,6,9,12,15,3,6,9,12,15,3,6,9,12,15,3,6,9,12,15,0,4,7,5,8,10,4,7,5,8,10,4,7,5,8,10,4,7,5,8,10,11,13,14,16,17,11,13,14,16,17,0];
+          let jj = []; 
+
+
+          if(k<2000){
+
+            jj = [3, 6, 9, 12, 15, 4, 0];
+
+          }else if(k>=2000 && k<3000){
+
+            jj=[3 , 6, 9, 12, 15, 4, 5, 7, 8, 0];
+
+          }else if(k>=3000 && k<4000){
+
+            jj= [3 , 6, 9, 12, 15, 4, 5, 7, 8, 0, 10, 11];
+
+          }else if(k>=4000){
+            jj= [3 , 6, 9, 12, 15, 4, 5, 7, 8, 0, 10, 11, 13, 14, 16, 17];            
+          }
+
+
+
+          //jj = [3,6,9,12,15,3,6,9,12,15,3,6,9,12,15,3,6,9,12,15,3,6,9,12,15,3,6,9,12,15,0,4,7,5,8,10,4,7,5,8,10,4,7,5,8,10,4,7,5,8,10,11,13,14,16,17,11,13,14,16,17,0];
 
           let jt = [];
 
@@ -866,7 +894,7 @@ task.generateTasks = function(req, res, next) {
 
           
 
-         
+         /*
           
           knex.transaction( trx => {      
 
@@ -895,9 +923,9 @@ task.generateTasks = function(req, res, next) {
           .catch( err => {
             
           });
-
+        */
         
-        /*
+        
         knex.transaction( trx => {      
 
                 knex('tasks').where({ id: (k+1) }).update({ points: sump, coins:sumc, money:summ }).transacting(trx)
@@ -926,7 +954,7 @@ task.generateTasks = function(req, res, next) {
             
           });
 
-          */
+          
 
 
   }        

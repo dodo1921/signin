@@ -219,7 +219,7 @@ game.startFactory = function(req, res, next) {
 
             for(let i=0; i<materials.length; i++){
               t = knex('jewels').where({user_id, jeweltype_id: materials[i].jeweltype_id})
-                                .where('count', '>', materials[i].count ).decrement('count', materials[i].count)
+                                .where('count', '>=', materials[i].count ).decrement('count', materials[i].count)
                                 .transacting(trx);
               p.push(t);
               

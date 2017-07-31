@@ -58,8 +58,8 @@ module.exports = function(userid) {
             return knex('jewels').insert({
               user_id: userid,
               jeweltype_id: 1,
-              count: 50,
-              total_count: 50              
+              count: 500,
+              total_count: 500              
             }).transacting(trx);
         })
         .then(()=>{

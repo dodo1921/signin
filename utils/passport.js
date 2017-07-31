@@ -11,7 +11,7 @@ module.exports = {
 	authenticate: function(req, userId, verificationCode, done){
 
 		knex('users').where({id: userId})
-		.select( 'id', 'vcode', 'scode', 'online', 'topic', 'token_google', 'is_rooted', 'jewel_block', 'initialized', 'teamjc_id', 'active' )
+		.select( 'id', 'vcode', 'scode', 'online', 'topic', 'token_google', 'is_rooted', 'jewel_block', 'initialized', 'teamjc_id', 'teamjc_phone', 'active' )
 		.then( user => {
 			if(user[0].vcode === verificationCode){
 

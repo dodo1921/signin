@@ -9,7 +9,7 @@ exports.up = function(knex, Promise) {
       table.string('scode').nullable();      
       table.string('name').nullable();
       table.string('status', 1000).nullable();
-      table.text('pic', [longtext] ).nullable();
+      table.text('pic', 'longtext' ).nullable();
       table.string('large_pic').nullable();
       table.bigInteger('reference').unsigned().nullable();      
       table.string('token_google').nullable();
@@ -23,6 +23,7 @@ exports.up = function(knex, Promise) {
       table.boolean('online').defaultTo(false);
       table.string('topic').nullable();
       table.integer('teamjc_id').unsigned().nullable();
+      table.string('teamjc_phone').nullable();
       
       table.unique(['phone']);
       
@@ -87,9 +88,9 @@ exports.up = function(knex, Promise) {
       table.bigInteger('sender_phone').unsigned().nullable();
       table.integer('receiver_id').unsigned().nullable(); 
       table.string('eventname').notNull();         
-      table.text('msg', [longtext]).nullable(); 
+      table.text('msg', 'longtext').nullable(); 
       table.string('path').nullable();
-      table.text('blob', [longtext]).nullable(); 
+      table.text('blob', 'longtext').nullable(); 
       table.integer('type').nullable();
       table.integer('jeweltype_id').unsigned().nullable();
       table.integer('chat_id').unsigned().nullable();      
@@ -113,9 +114,9 @@ exports.up = function(knex, Promise) {
       table.bigInteger('sender_phone').unsigned().nullable();       
       table.integer('group_id').unsigned().nullable();  
       table.string('eventname').notNull();     
-      table.text('msg', [longtext]).nullable(); 
+      table.text('msg', 'longtext').nullable(); 
       table.string('path').nullable();  
-      table.text('blob', [longtext]).nullable();    
+      table.text('blob', 'longtext').nullable();    
       table.integer('type').nullable();      
       table.integer('jeweltype_id').unsigned().nullable();  
       table.integer('chat_id').unsigned().nullable();    
