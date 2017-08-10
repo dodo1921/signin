@@ -827,18 +827,20 @@ task.generateTasks = function(req, res, next) {
 
           if(k<2000){
 
-            jj = [3, 6, 9, 12, 15, 4, 0];
+            jj = [3, 6, 3, 6 ,3, 6, 9, 12, 15, 4, 0];
 
           }else if(k>=2000 && k<3000){
 
-            jj=[3 , 6, 9, 12, 15, 4, 5, 7, 8, 0];
+            jj=[3 , 6, 9, 3 , 6, 9, 12, 15, 4, 5, 7, 8, 0];
 
           }else if(k>=3000 && k<4000){
 
             jj= [3 , 6, 9, 12, 15, 4, 5, 7, 8, 0, 10, 11];
 
           }else if(k>=4000){
-            jj= [3 , 6, 9, 12, 15, 4, 5, 7, 8, 0, 10, 11, 13, 14, 16, 17];            
+
+            jj= [3 , 6, 9, 12, 15, 4, 5, 7, 8, 0, 10, 11, 13, 14, 16, 17]; 
+
           }
 
 
@@ -876,8 +878,14 @@ task.generateTasks = function(req, res, next) {
 
             if( jj[t-1] == 0)
               c = 1;
-            else
+            else if( jj[t-1] == 15 || jj[t-1] == 16 || jj[t-1] == 17 )
+              c = Math.floor(Math.random() * (2 - 1 + 1)) + 1;
+            else if( jj[t-1] == 12 || jj[t-1] == 13 || jj[t-1] == 14 )
+              c = Math.floor(Math.random() * (3 - 1 + 1)) + 1;
+            else if( jj[t-1] == 9 || jj[t-1] == 10 || jj[t-1] == 11 )
               c = Math.floor(Math.random() * (5 - 1 + 1)) + 1;
+            else
+              c = Math.floor(Math.random() * (7 - 1 + 1)) + 1;
 
             sump+=points(jj[t-1],c);
             sumc+= coins(jj[t-1],c);
@@ -894,7 +902,7 @@ task.generateTasks = function(req, res, next) {
 
           
 
-         /*
+         
           
           knex.transaction( trx => {      
 
@@ -923,9 +931,9 @@ task.generateTasks = function(req, res, next) {
           .catch( err => {
             
           });
-        */
         
         
+        /*
         knex.transaction( trx => {      
 
                 knex('tasks').where({ id: (k+1) }).update({ points: sump, coins:sumc, money:summ }).transacting(trx)
@@ -953,8 +961,8 @@ task.generateTasks = function(req, res, next) {
           .catch( err => {
             
           });
-
-          
+        
+          */
 
 
   }        

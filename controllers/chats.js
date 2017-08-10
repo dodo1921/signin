@@ -67,7 +67,7 @@ chats.getAllChatMessages = function(req, res, next) {
 				if( chats.length>=20 )
 					return res.json({ error: false, chats, pageno: (page + 1) });
 				else 
-					return res.json({ error: false, chats, pageno: -1, created_at: new Date().getTime() });
+					return res.json({ error: false, chats, pageno: -1, created_at: new Date().getTime()-300000 });
 
 		})
 		.catch(err => {

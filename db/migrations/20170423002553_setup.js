@@ -8,7 +8,7 @@ exports.up = function(knex, Promise) {
       table.string('vcode').nullable(); 
       table.string('scode').nullable();      
       table.string('name').nullable();
-      table.string('status', 1000).nullable();
+      table.string('status', 1000).nullable().collate('utf8mb4_unicode_ci');
       table.text('pic', 'longtext' ).nullable();
       table.string('large_pic').nullable();
       table.bigInteger('reference').unsigned().nullable();      
@@ -28,6 +28,9 @@ exports.up = function(knex, Promise) {
       table.unique(['phone']);
       
       table.index(['reference']);
+
+      table.charset('utf8mb4');
+      table.collate('utf8mb4_unicode_ci');
       
 
     })
@@ -88,7 +91,7 @@ exports.up = function(knex, Promise) {
       table.bigInteger('sender_phone').unsigned().nullable();
       table.integer('receiver_id').unsigned().nullable(); 
       table.string('eventname').notNull();         
-      table.text('msg', 'longtext').nullable(); 
+      table.text('msg', 'longtext').nullable().collate('utf8mb4_unicode_ci'); 
       table.string('path').nullable();
       table.text('blob', 'longtext').nullable(); 
       table.integer('type').nullable();
@@ -103,6 +106,10 @@ exports.up = function(knex, Promise) {
       table.foreign('sender_id').references('users.id');
       table.foreign('receiver_id').references('users.id');      
       table.foreign('jeweltype_id').references('jeweltype.id');
+
+      table.charset('utf8mb4');
+      table.collate('utf8mb4_unicode_ci');
+
     })
   })
   .then(() => {
@@ -114,7 +121,7 @@ exports.up = function(knex, Promise) {
       table.bigInteger('sender_phone').unsigned().nullable();       
       table.integer('group_id').unsigned().nullable();  
       table.string('eventname').notNull();     
-      table.text('msg', 'longtext').nullable(); 
+      table.text('msg', 'longtext').nullable().collate('utf8mb4_unicode_ci'); 
       table.string('path').nullable();  
       table.text('blob', 'longtext').nullable();    
       table.integer('type').nullable();      
@@ -128,6 +135,10 @@ exports.up = function(knex, Promise) {
       table.foreign('sender_id').references('users.id');      
       table.foreign('group_id').references('groups.id');
       table.foreign('jeweltype_id').references('jeweltype.id');
+
+      table.charset('utf8mb4');
+      table.collate('utf8mb4_unicode_ci');
+      
     })
   })  
   .then(() => {
@@ -192,7 +203,7 @@ exports.up = function(knex, Promise) {
       table.foreign('task_id').references('tasks.id');
       table.foreign('user_id').references('users.id');      
     })
-  })
+  })  
   .then(() => {
     return knex.schema.createTable('achievements', function(table){
       table.integer('id').unsigned().notNull().primary();

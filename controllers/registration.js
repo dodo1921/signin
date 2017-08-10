@@ -331,7 +331,7 @@ registration.inviteUser= function(req, res, next) {
 				  		return res.json({error: false, phone: req.body.phone,  invite: 1, is_regis:false });
 				  })
 				  .catch(err=>{
-				  	next(err);
+				  	return res.json({error: false, phone: req.body.phone,  invite: 1, is_regis:false });
 				  });
 
 			}

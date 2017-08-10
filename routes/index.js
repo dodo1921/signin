@@ -67,6 +67,7 @@ router.post('/getFactories', passportUtils.isAuthenticated, jccookie.cookie , co
 router.post('/getFactoryMaterials', passportUtils.isAuthenticated, jccookie.cookie , controller.game.getFactoryMaterials);
 router.post('/startFactory', passportUtils.isAuthenticated, jccookie.cookie , controller.game.startFactory);
 router.post('/stopFactory', passportUtils.isAuthenticated, jccookie.cookie , controller.game.stopFactory);
+router.post('/flushFactory', passportUtils.isAuthenticated, jccookie.cookie , controller.game.flushFactory);
 router.post('/getJewelFromFactory', passportUtils.isAuthenticated, jccookie.cookie , controller.game.getJewelFromFactory);
 
 router.post('/getMarket', passportUtils.isAuthenticated, jccookie.cookie , controller.game.getMarket);

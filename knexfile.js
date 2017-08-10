@@ -36,7 +36,7 @@ module.exports = {
       user: 'root',
       password: '',
       database: 'test',
-      charset: 'utf8'
+      charset: 'utf8mb4'
     },
     migrations: {
       directory: __dirname + '/db/migrations'

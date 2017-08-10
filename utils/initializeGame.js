@@ -309,7 +309,7 @@ module.exports = function(userid) {
               user_id: userid,
               task_id: 20                          
             }).transacting(trx);
-        })
+        })        
         .then(()=>{
             return knex('achievementusers').insert({
               user_id: userid,
@@ -501,6 +501,9 @@ module.exports = function(userid) {
               user_id: userid,
               achievement_id: 32                          
             }).transacting(trx);
+        })
+        .then( () =>{
+          return knex('money').decrement('money', 8.0).transacting(trx);
         })
         .then( () =>{
           return knex('users').where({ id: userid }).update({ initialized: true }).transacting(trx);

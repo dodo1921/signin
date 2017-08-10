@@ -267,6 +267,40 @@ game.startFactory = function(req, res, next) {
 
 };
 
+
+game.flushFactory = function(req, res, next) {
+
+  let user_id = req.session.user.id;
+  let factory_id = req.body.id;
+
+  knex('factoryuser').where({ factory_id, user_id }).select()
+  .then(factoryuser => {
+
+    if(factoryuser.length == 0)
+      throw new Error('Invalid Factory');
+
+    if(!factoryuser[0].is_on)
+      throw new Error('Factory is not on');
+
+
+    knex('factoryuser').where({ factory_id, user_id }).update({is_on:false})
+    .then(val=>{
+       return res.json({error: false });       
+    })
+    .catch(err=>{
+      next(err);
+    })
+
+    
+
+  })
+  .catch(err => {
+    next(err);
+  })
+
+
+};
+
 game.stopFactory = function(req, res, next) {
 
   let user_id = req.session.user.id;
