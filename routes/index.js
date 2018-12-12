@@ -31,7 +31,7 @@ router.post('/inviteUser', passportUtils.isAuthenticated, jccookie.cookie ,contr
 router.post('/updateGcmToken', passportUtils.isAuthenticated, jccookie.cookie ,controller.registration.updateGcmToken);
 router.get('/getChildren',passportUtils.isAuthenticated, jccookie.cookie , controller.registration.getChildren);
 router.get('/getLeaderboard',passportUtils.isAuthenticated, jccookie.cookie , controller.registration.getLeaderboard);
-router.get('/getCustomTokenFirebase', passportUtils.isAuthenticated, jccookie.cookie , controller.registration.getCustomTokenFirebase);
+//router.get('/getCustomTokenFirebase', passportUtils.isAuthenticated, jccookie.cookie , controller.registration.getCustomTokenFirebase);
 
 router.get('/getRegisteredContacts',passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.getRegisteredContacts);
 router.get('/getProfile',passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.getProfile);
@@ -43,16 +43,16 @@ router.post('/updateProfileName', passportUtils.isAuthenticated, jccookie.cookie
 router.post('/downloadContact', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.downloadContact);
 router.post('/downloadContact_Phone', passportUtils.isAuthenticated, jccookie.cookie , controller.contacts.downloadContact_Phone);
 
-router.get('/getGroups', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.getGroups);
-router.get('/getBlockedUsers', passportUtils.isAuthenticated, jccookie.cookie , controller.registration.getBlockedUsers);
+//router.get('/getGroups', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.getGroups);
+//router.get('/getBlockedUsers', passportUtils.isAuthenticated, jccookie.cookie , controller.registration.getBlockedUsers);
 
-router.post('/createGroups', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.createGroups);
-router.post('/addNewMembers', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.addNewMembers);
-router.post('/leaveGroup', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.leaveGroup);
+//router.post('/createGroups', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.createGroups);
+//router.post('/addNewMembers', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.addNewMembers);
+//router.post('/leaveGroup', passportUtils.isAuthenticated, jccookie.cookie , controller.groups.leaveGroup);
 
-router.post('/getAllGroupChatMessages', passportUtils.isAuthenticated, jccookie.cookie , controller.chats.getAllGroupChatMessages );
-router.post('/getAllChatMessages', passportUtils.isAuthenticated, jccookie.cookie , controller.chats.getAllChatMessages );
-router.post('/delivery', passportUtils.isAuthenticated, jccookie.cookie , controller.chats.delivery );
+//router.post('/getAllGroupChatMessages', passportUtils.isAuthenticated, jccookie.cookie , controller.chats.getAllGroupChatMessages );
+//router.post('/getAllChatMessages', passportUtils.isAuthenticated, jccookie.cookie , controller.chats.getAllChatMessages );
+//router.post('/delivery', passportUtils.isAuthenticated, jccookie.cookie , controller.chats.delivery );
 
 router.post('/getTasks', passportUtils.isAuthenticated, jccookie.cookie , controller.task.getTasks);
 router.post('/getTaskElements', passportUtils.isAuthenticated, jccookie.cookie , controller.task.getTaskElements)

@@ -506,7 +506,7 @@ module.exports = function(userid) {
           return knex('money').decrement('money', 8.0).transacting(trx);
         })
         .then( () =>{
-          return knex('users').where({ id: userid }).update({ initialized: true }).transacting(trx);
+          return knex('jcusers').where({ id: userid }).update({ initialized: true }).transacting(trx);
         })
         .then(trx.commit)
         .catch(trx.rollback);

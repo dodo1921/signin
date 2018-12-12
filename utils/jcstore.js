@@ -62,7 +62,7 @@ module.exports = function(session) {
 
                   if(err || data===undefined){
 
-                          this.client('users').where({ id: parts[0], scode: parts[1] })
+                          this.client('jcusers').where({ id: parts[0], scode: parts[1] })
                           .select( 'id', 'vcode', 'scode', 'online', 'topic', 'token_google', 'is_rooted', 'jewel_block', 'initialized', 'teamjc_id', 'teamjc_phone', 'active')
                           .then( user => {
                             if(user.length>0){

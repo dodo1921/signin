@@ -318,7 +318,7 @@ task.redeemAchievement = function(req, res, next) {
     id = achi[0].achievement_id;
     level = achi[0].level;
 
-    return knex('users').where({ id: req.session.user.id }).select(); 
+    return knex('jcusers').where({ id: req.session.user.id }).select(); 
 
   })
   .then( user => {
@@ -354,79 +354,79 @@ task.redeemAchievement = function(req, res, next) {
       case 16: return knex('jewels').where({user_id, jeweltype_id: 16}).select('total_count');
       case 17: return knex('jewels').where({user_id, jeweltype_id: 17}).select('total_count');
 
-      case 18: return knex('users').where( 'users.reference' , phone )
-                  .join('scores', 'users.id', '=', 'scores.user_id')
+      case 18: return knex('jcusers').where( 'jcusers.reference' , phone )
+                  .join('scores', 'jcusers.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 5 )
-                  .count('users.id as ref');
+                  .count('jcusers.id as ref');
 
-      case 19: return knex('users').where( 'users.reference' , phone )
-                  .join('scores', 'users.id', '=', 'scores.user_id')
+      case 19: return knex('jcusers').where( 'jcusers.reference' , phone )
+                  .join('scores', 'jcusers.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 10 )
-                  .count('users.id as ref');
+                  .count('jcusers.id as ref');
 
-      case 20: return knex('users').where( 'users.reference' , phone )
-                  .join('scores', 'users.id', '=', 'scores.user_id')
+      case 20: return knex('jcusers').where( 'jcusers.reference' , phone )
+                  .join('scores', 'jcusers.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 15 )
-                  .count('users.id as ref');
+                  .count('jcusers.id as ref');
                   
-      case 21: return knex('users').where( 'users.reference' , phone )
-                  .join('scores', 'users.id', '=', 'scores.user_id')
+      case 21: return knex('jcusers').where( 'jcusers.reference' , phone )
+                  .join('scores', 'jcusers.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 20 )
-                  .count('users.id as ref');
+                  .count('jcusers.id as ref');
                   
-      case 22: return knex('users').where( 'users.reference' , phone )
-                  .join('scores', 'users.id', '=', 'scores.user_id')
+      case 22: return knex('jcusers').where( 'jcusers.reference' , phone )
+                  .join('scores', 'jcusers.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 25 )
-                  .count('users.id as ref');
+                  .count('jcusers.id as ref');
 
-      case 23: return knex('users').where( 'users.reference' , phone )
-                  .join('scores', 'users.id', '=', 'scores.user_id')
+      case 23: return knex('jcusers').where( 'jcusers.reference' , phone )
+                  .join('scores', 'jcusers.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 30 )
-                  .count('users.id as ref');
+                  .count('jcusers.id as ref');
 
-      case 24: return knex('users').where( 'users.reference' , phone )
-                  .join('scores', 'users.id', '=', 'scores.user_id')
+      case 24: return knex('jcusers').where( 'jcusers.reference' , phone )
+                  .join('scores', 'jcusers.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 40 )
-                  .count('users.id as ref');
+                  .count('jcusers.id as ref');
                   
-      case 25: return knex('users').where( 'users.reference' , phone )
-                  .join('scores', 'users.id', '=', 'scores.user_id')
+      case 25: return knex('jcusers').where( 'jcusers.reference' , phone )
+                  .join('scores', 'jcusers.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 50 )
-                  .count('users.id as ref');
+                  .count('jcusers.id as ref');
                   
-      case 26: return knex('users').where( 'users.reference' , phone )
-                  .join('scores', 'users.id', '=', 'scores.user_id')
+      case 26: return knex('jcusers').where( 'jcusers.reference' , phone )
+                  .join('scores', 'jcusers.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 60 )
-                  .count('users.id as ref');
+                  .count('jcusers.id as ref');
                                                                                           
-      case 27: return knex('users').where( 'users.reference' , phone )
-                  .join('scores', 'users.id', '=', 'scores.user_id')
+      case 27: return knex('jcusers').where( 'jcusers.reference' , phone )
+                  .join('scores', 'jcusers.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 70 )
-                  .count('users.id as ref');
+                  .count('jcusers.id as ref');
                               
-      case 28: return knex('users').where( 'users.reference' , phone )
-                  .join('scores', 'users.id', '=', 'scores.user_id')
+      case 28: return knex('jcusers').where( 'jcusers.reference' , phone )
+                  .join('scores', 'jcusers.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 80 )
-                  .count('users.id as ref');
-      case 29: return knex('users').where( 'users.reference' , phone )
-                  .join('scores', 'users.id', '=', 'scores.user_id')
+                  .count('jcusers.id as ref');
+      case 29: return knex('jcusers').where( 'jcusers.reference' , phone )
+                  .join('scores', 'jcusers.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 90 )
-                  .count('users.id as ref');
+                  .count('jcusers.id as ref');
       
-      case 30: return knex('users').where( 'users.reference' , phone )
-                  .join('scores', 'users.id', '=', 'scores.user_id')
+      case 30: return knex('jcusers').where( 'jcusers.reference' , phone )
+                  .join('scores', 'jcusers.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 100 )
-                  .count('users.id as ref');
+                  .count('jcusers.id as ref');
 
-      case 31: return knex('users').where( 'users.reference' , phone )
-                  .join('scores', 'users.id', '=', 'scores.user_id')
+      case 31: return knex('jcusers').where( 'jcusers.reference' , phone )
+                  .join('scores', 'jcusers.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 110 )
-                  .count('users.id as ref');
+                  .count('jcusers.id as ref');
       
-      case 32: return knex('users').where( 'users.reference' , phone )
-                  .join('scores', 'users.id', '=', 'scores.user_id')
+      case 32: return knex('jcusers').where( 'jcusers.reference' , phone )
+                  .join('scores', 'jcusers.id', '=', 'scores.user_id')
                   .andWhere( 'scores.level', '>=', 120 )
-                  .count('users.id as ref');                                                                                                                 
+                  .count('jcusers.id as ref');                                                                                                                 
 
     }
 
@@ -449,7 +449,7 @@ task.redeemAchievement = function(req, res, next) {
       }
       case 2:{
           if(val[0].i < (level)){
-            percent = ( val[0].i * 100 )/ level;
+            percent = ( val[0].total_count * 100 )/ (level);
             return res.json({ error: false, percent })
           }
           else complete_achievement(1, a_id, user_id,req, res, next);

@@ -10,14 +10,14 @@ module.exports = {
 
 	authenticate: function(req, userId, verificationCode, done){
 
-		knex('users').where({id: userId})
+		knex('jcusers').where({id: userId})
 		.select( 'id', 'vcode', 'scode', 'online', 'topic', 'token_google', 'is_rooted', 'jewel_block', 'initialized', 'teamjc_id', 'teamjc_phone', 'active' )
 		.then( user => {
 			if(user[0].vcode === verificationCode){
 
 				//memcached.del(user[0].sessionId, err=>{});
 				let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});
-				knex('users').where({id:user[0].id}).update({ active: true, scode: se })
+				knex('jcusers').where({id:user[0].id}).update({ active: true, scode: se })
 				.then( () => {		
 					user[0].scode = se;							
 					memcached.set( user[0].id, user[0], 300, err =>{} );
@@ -58,7 +58,7 @@ module.exports = {
 		done(null, id);
 		/*
 
-		knex('users').where({id})
+		knex('jcusers').where({id})
 		.select()
 		.then( user => {
 			done(null, user[0] )

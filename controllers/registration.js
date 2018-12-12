@@ -13,7 +13,7 @@ let initializeGame = require('../utils/initializeGame');
 
 let game = require('./game');
 
-let admin = require('firebase-admin');
+//let admin = require('firebase-admin');
 
 let config = require('../utils/config');
 
@@ -31,7 +31,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 	let phone = req.body.phone;
 	console.log('>>>>'+phone);
-	knex('users').where({phone}).select()
+	knex('jcusers').where({phone}).select()
 	.then( user =>{
 
 		if( user.length>0 ){	
@@ -40,7 +40,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 					let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});					
 
-					knex('users').where({phone}).update({vcode:se})
+					knex('jcusers').where({phone}).update({vcode:se})
 					.then(()=>{								
 
 								if( user[0].active ){		
@@ -64,7 +64,7 @@ registration.registerPhoneNumber = function(req, res, next) {
 
 					//insert new user
 					let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});
-					knex.returning('id').table('users').insert({ phone, vcode:se, name: 'defaultJCUname', status: 'Keep collecting...', teamjc_id: teamjc_list[0].id, teamjc_phone: teamjc_list[0].phone })
+					knex.returning('id').table('jcusers').insert({ phone, vcode:se, name: 'defaultJCUname', status: 'Keep collecting...', teamjc_id: teamjc_list[0].id, teamjc_phone: teamjc_list[0].phone })
 					.then(id => {								
 										
 										return res.json({ error: false, userId: id[0], active: false, name: 'defaultJCUname', status_msg: 'Keep collecting...', app_version : game.app_version });
@@ -155,7 +155,7 @@ registration.verifyCode= function(req, res, next) {
 registration.checkValidReference= function(req, res, next) {	
 			
 
-		knex('users').where({ phone: req.body.reference}).select()
+		knex('jcusers').where({ phone: req.body.reference}).select()
 		.then( user=>{
 				if(user.length>0)
 					res.json({ error: false, is_valid: true  });
@@ -180,7 +180,7 @@ registration.initialDetails= function(req, res, next) {
 
 			if(req.session.user.phone !== parseInt(req.body.reference)){
 					
-					knex('users').where({ phone: req.body.reference, initialized: true }).select('id')
+					knex('jcusers').where({ phone: req.body.reference, initialized: true }).select('id')
 					.then( user=>{
 							if(user.length>0){
 								upd.reference = req.body.reference;	ref_id = user[0].id;
@@ -189,7 +189,7 @@ registration.initialDetails= function(req, res, next) {
 
 											knex.transaction( trx => {
 
-													knex('users').where({ id: req.session.user.id }).update(upd).transacting(trx)
+													knex('jcusers').where({ id: req.session.user.id }).update(upd).transacting(trx)
 													.then( () => {
 
 														return knex('jewels').where({ user_id: ref_id, jeweltype_id: 2 }).increment('count', 1).transacting(trx);
@@ -229,7 +229,7 @@ registration.initialDetails= function(req, res, next) {
 
 									}else{
 
-											knex('users').where({ id: req.session.user.id }).update(upd)
+											knex('jcusers').where({ id: req.session.user.id }).update(upd)
 											.then(()=>{
 													return res.json({ error: false, name: req.body.name });
 											})
@@ -242,7 +242,7 @@ registration.initialDetails= function(req, res, next) {
 
 							}else{
 
-											knex('users').where({ id: req.session.user.id }).update(upd)
+											knex('jcusers').where({ id: req.session.user.id }).update(upd)
 											.then(()=>{
 													return res.json({ error: false, name: req.body.name });
 											})
@@ -266,7 +266,7 @@ registration.initialDetails= function(req, res, next) {
 
 		}else{
 
-				knex('users').where({ id: req.session.user.id }).update(upd)
+				knex('jcusers').where({ id: req.session.user.id }).update(upd)
 				.then(()=>{
 						return res.json({ error: false, name: req.body.name });
 				})
@@ -289,7 +289,7 @@ registration.resendVcode= function(req, res, next) {
 
   	let se = speakeasy.totp({secret: 'secret',  encoding: 'base32'});;
 
-		knex('users').where({id}).update({vcode:se})
+		knex('jcusers').where({id}).update({vcode:se})
 		.then(()=>{
 
 					
@@ -297,7 +297,7 @@ registration.resendVcode= function(req, res, next) {
 					/*
 					setTimeout(function(){
 						//set vcode to null
-						knex('users').where({phone}).update({vcode:null});
+						knex('jcusers').where({phone}).update({vcode:null});
 
 					}, 600000);
 
@@ -316,7 +316,7 @@ registration.resendVcode= function(req, res, next) {
 registration.inviteUser= function(req, res, next) { 
 
 
-	knex('users').where({phone: req.body.phone, active:true }).select()
+	knex('jcusers').where({phone: req.body.phone, active:true }).select()
 	.then(user=>{
 
 			if(user.length>0)
@@ -354,30 +354,30 @@ registration.getLeaderboard = function(req, res, next) {
 				throw new Error('Illegal Operation');	
 
 			let t1 = knex('scores').where({level:scores[0].level+1}).andWhere('points','>',0)
-								.join('users','scores.user_id', '=', 'users.id')
+								.join('jcusers','scores.user_id', '=', 'jcusers.id')
 								.orderBy('scores.points', 'desc')
-								.select('users.id as id', 'users.pic as pic', 'users.name as name', 'scores.level as level', 'scores.points as points')
+								.select('jcusers.id as id', 'jcusers.pic as pic', 'jcusers.name as name', 'scores.level as level', 'scores.points as points')
 								.limit(5);
 			p.push(t1);					
 
 			let t2 = knex('scores').where({level:scores[0].level}).andWhere('points','>',scores[0].points)
-								.join('users','scores.user_id', '=', 'users.id')
+								.join('jcusers','scores.user_id', '=', 'jcusers.id')
 								.orderBy('scores.points', 'desc')
-								.select('users.id as id', 'users.pic as pic', 'users.name as name', 'scores.level as level', 'scores.points as points')
+								.select('jcusers.id as id', 'jcusers.pic as pic', 'jcusers.name as name', 'scores.level as level', 'scores.points as points')
 								.limit(5);
 			p.push(t2);									
 
 			let t3 = knex('scores').where({level:scores[0].level}).andWhere('points','<',scores[0].points)
-								.join('users','scores.user_id', '=', 'users.id')
+								.join('jcusers','scores.user_id', '=', 'jcusers.id')
 								.orderBy('scores.points', 'desc')
-								.select('users.id as id', 'users.pic as pic', 'users.name as name', 'scores.level as level', 'scores.points as points')
+								.select('jcusers.id as id', 'jcusers.pic as pic', 'jcusers.name as name', 'scores.level as level', 'scores.points as points')
 								.limit(10);
 			p.push(t3);							
 
 			let t4 = knex('scores').where({level:scores[0].level-1})
-								.join('users','scores.user_id', '=', 'users.id')
+								.join('jcusers','scores.user_id', '=', 'jcusers.id')
 								.orderBy('scores.points', 'desc')
-								.select('users.id as id', 'users.pic as pic', 'users.name as name', 'scores.level as level', 'scores.points as points')
+								.select('jcusers.id as id', 'jcusers.pic as pic', 'jcusers.name as name', 'scores.level as level', 'scores.points as points')
 								.limit(10);					
 
 			p.push(t4);						
@@ -417,10 +417,10 @@ registration.getLeaderboard = function(req, res, next) {
 
 registration.getBlockedUsers = function(req, res, next){		
 
-				knex('blocked').where({ user_id: req.session.user.id }).join('users', 'users.id', '=', 'blocked.user_id')
-				.select('users.id as id', 'users.phone as phone', 'users.name as name', 'users.status as status', 'users.pic as pic')
-				.then(users => {
-					return res.json({error: false, users })
+				knex('blocked').where({ user_id: req.session.user.id }).join('jcusers', 'jcusers.id', '=', 'blocked.user_id')
+				.select('jcusers.id as id', 'jcusers.phone as phone', 'jcusers.name as name', 'jcusers.status as status', 'jcusers.pic as pic')
+				.then(jcusers => {
+					return res.json({error: false, jcusers })
 				})
 				.catch(err => {
 					next(err);
@@ -434,7 +434,7 @@ registration.updateGcmToken= function(req, res, next) {
 		let token = req.body.token;
 		  	
 
-		knex('users').where({id: req.session.user.id}).update({ token_google:token })
+		knex('jcusers').where({id: req.session.user.id}).update({ token_google:token })
 		.then(()=>{
 			res.json({ error: false });
 		})
@@ -445,6 +445,7 @@ registration.updateGcmToken= function(req, res, next) {
 
 };
 
+/*
 registration.getCustomTokenFirebase = function(req, res, next) {		
 
 		admin.auth().createCustomToken(req.session.user.id+'')
@@ -458,14 +459,16 @@ registration.getCustomTokenFirebase = function(req, res, next) {
 
 };
 
+*/
+
 registration.getChildren= function(req, res, next) {
   
-	  knex('users')
+	  knex('jcusers')
 	  .where({reference: req.user.phone })
-	  .join('scores', 'users.id', '=', 'scores.user_id')
-	  .select('users.id as id', 'users.name as name', 'users.pic pic','scores.level', 'scores.points as points')
-		.then( users =>{
-			return res.json({ error: false, children: users });
+	  .join('scores', 'jcusers.id', '=', 'scores.user_id')
+	  .select('jcusers.id as id', 'jcusers.name as name', 'jcusers.pic pic','scores.level', 'scores.points as points')
+		.then( jcusers =>{
+			return res.json({ error: false, children: jcusers });
 		})
 		.catch(err=>{
 			next(err);

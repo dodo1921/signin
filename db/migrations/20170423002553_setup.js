@@ -2,7 +2,7 @@
 
 exports.up = function(knex, Promise) {  
 
-  return knex.schema.createTable('users', function(table){
+  return knex.schema.createTable('jcusers', function(table){
       table.increments('id');      
       table.bigInteger('phone').unsigned().notNull();
       table.string('vcode').nullable(); 
@@ -12,16 +12,14 @@ exports.up = function(knex, Promise) {
       table.text('pic', 'longtext' ).nullable();
       table.string('large_pic').nullable();
       table.bigInteger('reference').unsigned().nullable();      
-      table.string('token_google').nullable();
-      table.string('token_apple').nullable();      
+      table.string('push_service').nullable();
+      table.string('device_id').nullable();      
       table.boolean('active').defaultTo(false);
       table.boolean('initialized').defaultTo(false);
       table.boolean('is_rooted').nullable();   
       table.boolean('jewel_block').nullable();      
       table.timestamp('created_at').defaultTo(knex.fn.now());
-      table.timestamp('updated_at').defaultTo(knex.fn.now());
-      table.boolean('online').defaultTo(false);
-      table.string('topic').nullable();
+      table.timestamp('updated_at').defaultTo(knex.fn.now());      
       table.integer('teamjc_id').unsigned().nullable();
       table.string('teamjc_phone').nullable();
       
@@ -52,7 +50,7 @@ exports.up = function(knex, Promise) {
       table.integer('blocked_user_id').unsigned().notNull(); 
       table.index(['user_id']);  
 
-      table.foreign('user_id').references('users.id');
+      table.foreign('user_id').references('jcusers.id');
     })
   })  
   .then(() => {
@@ -78,7 +76,7 @@ exports.up = function(knex, Promise) {
       table.integer('group_id').unsigned().notNull();   
       table.boolean('is_admin').defaultTo(false);
       table.index(['group_id']);
-      table.foreign('user_id').references('users.id');
+      table.foreign('user_id').references('jcusers.id');
       table.foreign('group_id').references('groups.id');
     })
   })
@@ -103,8 +101,8 @@ exports.up = function(knex, Promise) {
       table.index([ 'receiver_id' ]);
       table.index([ 'receiver_id', 'created_at' ]);
       
-      table.foreign('sender_id').references('users.id');
-      table.foreign('receiver_id').references('users.id');      
+      table.foreign('sender_id').references('jcusers.id');
+      table.foreign('receiver_id').references('jcusers.id');      
       table.foreign('jeweltype_id').references('jeweltype.id');
 
       table.charset('utf8mb4');
@@ -132,7 +130,7 @@ exports.up = function(knex, Promise) {
       //table.index([ 'sender_id' ]);      
       table.index([ 'group_id' ]);
       table.index([ 'group_id', 'created_at' ]);
-      table.foreign('sender_id').references('users.id');      
+      table.foreign('sender_id').references('jcusers.id');      
       table.foreign('group_id').references('groups.id');
       table.foreign('jeweltype_id').references('jeweltype.id');
 
@@ -150,7 +148,7 @@ exports.up = function(knex, Promise) {
       table.integer('max_level_points').defaultTo(55).notNull();      
       table.integer('storesize').defaultTo(25).notNull();
       table.index(['user_id']);
-      table.foreign('user_id').references('users.id');
+      table.foreign('user_id').references('jcusers.id');
     })
   })
   .then(() => {
@@ -163,7 +161,7 @@ exports.up = function(knex, Promise) {
       table.timestamp('updated_at').defaultTo(knex.fn.now());
 
       table.index(['user_id']);
-      table.foreign('user_id').references('users.id');
+      table.foreign('user_id').references('jcusers.id');
 
       table.foreign('jeweltype_id').references('jeweltype.id');          
     })
@@ -201,7 +199,7 @@ exports.up = function(knex, Promise) {
       table.index(['user_id']);
       table.index(['task_id']);
       table.foreign('task_id').references('tasks.id');
-      table.foreign('user_id').references('users.id');      
+      table.foreign('user_id').references('jcusers.id');      
     })
   })  
   .then(() => {
@@ -260,7 +258,7 @@ exports.up = function(knex, Promise) {
       table.index(['factory_id']);
       table.index(['user_id']);
       table.foreign('factory_id').references('factory.id'); 
-      table.foreign('user_id').references('users.id');      
+      table.foreign('user_id').references('jcusers.id');      
     })
   })
   .then(() => {
@@ -273,7 +271,7 @@ exports.up = function(knex, Promise) {
       table.boolean('diamond_used').defaultTo(false); 
 
       table.foreign('factory_id').references('factory.id'); 
-      table.foreign('user_id').references('users.id');      
+      table.foreign('user_id').references('jcusers.id');      
     })
   })
   .then(() => {
@@ -289,8 +287,8 @@ exports.up = function(knex, Promise) {
       table.index(['seller_id']);
       table.index(['buyer_id']);
 
-      table.foreign('seller_id').references('users.id');  
-      table.foreign('buyer_id').references('users.id'); 
+      table.foreign('seller_id').references('jcusers.id');  
+      table.foreign('buyer_id').references('jcusers.id'); 
       table.foreign('jeweltype_id').references('jeweltype.id'); 
 
     })
@@ -302,7 +300,7 @@ exports.up = function(knex, Promise) {
       table.decimal('money', [15], [2]).defaultTo(0.00).notNull();
       table.index(['user_id']);
       
-      table.foreign('user_id').references('users.id');  
+      table.foreign('user_id').references('jcusers.id');  
     })
   })
   .then(() => {
@@ -312,7 +310,7 @@ exports.up = function(knex, Promise) {
       table.decimal('money', [15], [2]).defaultTo(0.00).notNull();
       table.index(['user_id']);
       
-      table.foreign('user_id').references('users.id');     
+      table.foreign('user_id').references('jcusers.id');     
     })
   })
   .then(() => {
@@ -329,7 +327,7 @@ exports.up = function(knex, Promise) {
       table.timestamp('created_at').defaultTo(knex.fn.now());
       table.index(['user_id']);
 
-      table.foreign('user_id').references('users.id');
+      table.foreign('user_id').references('jcusers.id');
     })
   })
   .then(() => {
@@ -341,7 +339,7 @@ exports.up = function(knex, Promise) {
       table.string('logtext').notNull();
       table.index(['user_id']);
 
-      table.foreign('user_id').references('users.id');
+      table.foreign('user_id').references('jcusers.id');
     })
   })
   .then(() => {
@@ -353,7 +351,7 @@ exports.up = function(knex, Promise) {
       table.string('logtext').notNull();
       table.index(['user_id']);
 
-      table.foreign('user_id').references('users.id');
+      table.foreign('user_id').references('jcusers.id');
     })
   })
   .then(() => {
@@ -365,7 +363,7 @@ exports.up = function(knex, Promise) {
       table.string('logtext').notNull();
       table.index(['user_id']);
 
-      table.foreign('user_id').references('users.id');
+      table.foreign('user_id').references('jcusers.id');
     })
   })
   .then(() => {
@@ -381,7 +379,7 @@ exports.up = function(knex, Promise) {
 
 exports.down = function(knex, Promise) {  
   return Promise.all([
-    knex.schema.dropTableIfExists('users'),
+    knex.schema.dropTableIfExists('jcusers'),
     knex.schema.dropTableIfExists('invite'),
     knex.schema.dropTableIfExists('blocked'),    
     knex.schema.dropTableIfExists('groups'),

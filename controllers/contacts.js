@@ -10,11 +10,11 @@ let contacts = module.exports;
 contacts.getRegisteredContacts= function(req, res, next) {
   
 	  let phoneNumberList = req.body.phoneNumberList;
-	  knex('users')
+	  knex('jcusers')
 	  .whereIn( 'phone', phoneNumberList )
 	  .select( 'phone', 'id', 'pic')
-	  .then(users => {
-	  	res.json({ error:false, users});
+	  .then(jcusers => {
+	  	res.json({ error:false, jcusers});
 	  })
 	  .catch(err => {
 	  	next(err);
@@ -27,11 +27,11 @@ contacts.getRegisteredContacts= function(req, res, next) {
 contacts.downloadContact= function(req, res, next) {
   
 	  
-	  knex('users')
+	  knex('jcusers')
 	  .where( 'id', req.body.id )
 	  .select( 'id', 'pic', 'name', 'phone', 'status' )
-	  .then(users => {
-	  	return res.json({ error:false, contact: users[0] });
+	  .then(jcusers => {
+	  	return res.json({ error:false, contact: jcusers[0] });
 	  })
 	  .catch(err => {
 	  	next(err);
@@ -43,12 +43,12 @@ contacts.downloadContact= function(req, res, next) {
 contacts.downloadContact_Phone= function(req, res, next) {
   
 	  
-	  knex('users')
+	  knex('jcusers')
 	  .where( 'phone', req.body.phone )
 	  .select( 'id', 'pic', 'name', 'phone', 'status' )
-	  .then(users => {
-	  	if(users.length>0)
-	  		return res.json({ error:false, contact: users[0] });
+	  .then(jcusers => {
+	  	if(jcusers.length>0)
+	  		return res.json({ error:false, contact: jcusers[0] });
 	  	else{
 	  		let c = {};
 	  		return res.json({ error:false});
@@ -64,8 +64,8 @@ contacts.downloadContact_Phone= function(req, res, next) {
 contacts.getProfile= function(req, res, next) {
 
 		Promise.all([
-				knex('users').where({id: req.user.id }).join('scores', 'users.id', '=', 'scores.user_id')
-				.select('users.id', 'users.name', 'scores.level'),
+				knex('jcusers').where({id: req.user.id }).join('scores', 'jcusers.id', '=', 'scores.user_id')
+				.select('jcusers.id', 'jcusers.name', 'scores.level'),
 				knex('pics').where({user_id: req.user.id}).select()
 		])
 		.then(values => {
@@ -81,8 +81,8 @@ contacts.getProfile= function(req, res, next) {
 contacts.getUserProfile= function(req, res, next) {
   
 		Promise.all([
-				knex('users').where({id: req.body.user_id }).join('scores', 'users.id', '=', 'scores.user_id')
-				.select('users.id', 'users.name', 'scores.level'),
+				knex('jcusers').where({id: req.body.user_id }).join('scores', 'jcusers.id', '=', 'scores.user_id')
+				.select('jcusers.id', 'jcusers.name', 'scores.level'),
 				knex('pics').where({user_id: req.body.user_id }).select()
 		])
 		.then(values => {
@@ -108,7 +108,7 @@ contacts.addPic= function(req, res, next) {
 
 contacts.updateProfilePic = function(req, res, next) {  
   	
-  	knex('users').where({id: req.session.user.id}).update({ pic:req.body.pic })
+  	knex('jcusers').where({id: req.session.user.id}).update({ pic:req.body.pic })
 	.then((values)=>{
 		res.json({ error: false });
 	})
@@ -120,7 +120,7 @@ contacts.updateProfilePic = function(req, res, next) {
 
 contacts.updateProfileStatus = function(req, res, next) {
   
-	knex('users').where({ id: req.session.user.id }).update({ status: req.body.status })
+	knex('jcusers').where({ id: req.session.user.id }).update({ status: req.body.status })
 	.then(()=>{
 		res.json({ error: false });
 	})
@@ -133,7 +133,7 @@ contacts.updateProfileStatus = function(req, res, next) {
 
 contacts.updateProfileName = function(req, res, next) {
   
-	knex('users').where({ id: req.session.user.id }).update({ name: req.body.name })
+	knex('jcusers').where({ id: req.session.user.id }).update({ name: req.body.name })
 	.then(()=>{
 		res.json({ error: false });
 	})

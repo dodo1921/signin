@@ -4,7 +4,7 @@ exports.seed = function(knex, Promise) {
 
   return Promise.join(
     // Deletes ALL existing entries
-    knex('users').del()
+    knex('jcusers').del()
     //knex('tasks').del(),
     //knex('taskdetails').del(),
     //knex('achievements').del(),
@@ -12,7 +12,7 @@ exports.seed = function(knex, Promise) {
     //knex('factorymaterial').del()    
   )
   .then(()=>{
-      return knex('users').insert({
+      return knex('jcusers').insert({
         id: 1,
         phone: 910000000000,
         name: 'Team JewelChat',
